@@ -1,0 +1,28 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[[source]]
+name = "sre"
+url = "$SRE_PACKAGE_FEED"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+yapf = "*"
+pytest = "*"
+pytest-cov = "*"
+setuptools = "*"
+wheel = "*"
+twine = "*"
+pipenv-setup = "*"
+
+[packages]
+click = "*"
+marshmallow = "*"
+pyyaml = "*"
+requests = "*"
+
+[requires]
+python_version = "3.7"
