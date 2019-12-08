@@ -1,0 +1,6 @@
+{
+    "python.pythonPath": "C:\\Users\\apotter-dixon\\.virtualenvs\\Glasswall.SRE.Destroyer-L6E38Dq4\\Scripts\\python.exe",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+    "python.formatting.provider": "yapf"
+}
