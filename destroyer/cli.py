@@ -11,7 +11,7 @@ from typing import List, Iterable
 import click
 import sys
 import config
-from creator import create_environment
+from rebuild import rebuild_environment
 
 
 @click.group()
@@ -27,11 +27,11 @@ def destroy() -> None:
 
 @destroyer.command()
 @click.argument('cfg', default="./config.yaml", type=click.Path(exists=True))
-@click.argument('env', default='pent', type=str)
+@click.argument('env', default='dev', type=str)
 def rebuild(cfg: str, env: str) -> None:
     destroyer_config = config.load(cfg)
-    create_environment(
-        destroyer_config.environments,
+    rebuild_environment(
+        env,
         destroyer_config.access,
         destroyer_config.deployments,
     )

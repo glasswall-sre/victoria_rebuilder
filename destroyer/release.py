@@ -1,66 +1,72 @@
 from azure.devops.connection import Connection
 from msrest.authentication import BasicAuthentication
 from config import AccessConfig
+from typing import Union
 
 
 class Release:
-    def __init__(self, name, environment, access_cfg):
-        self.name = name
-        self.access_cfg = access_cfg
-        self.release_api = self.ReleaseAPI(access_cfg)
-        self.latest_release = self.get_latest_release("success")
+    """A release in AzureDevOps.
 
-    def get_latest_release(self, status):
+    Parameters:
+        name (str): Name of the release pipeline in Azure DevOps.
+        environment (str): The environment the release is to be associated with.
+        access_cfg (AccessConfig): Configuration to log into AzureDevops with.
+       
+    """
+    def __init__(self, name: str, environment: str, access_cfg: AccessConfig):
+        self.name = name
+        self.environment = environment
+        self.access_cfg = access_cfg
+        self.release_client = self.get_release_client()
+
+    # self.result = self.get_latest_release()
+
+    def get_latest_release(self) -> Union[int, int]:
         """
-        Retrieves the latest release that has been run.
-        
-        Attributes:
-            status (str): If successful, failed or abandoned.
+        Retrieves the latest release and environment id for a specific environment.
+        Gets a list of all the releases for a specific release pipeline, loops
+        through them and for each release looks for a matching environment and status.        
 
         Returns:
-            The ID of the release
+            The ID of the release and environment that was either succeeded or partially succeeded.
 
         """
 
-        result = self.release_api.get_releases(self.name)
-        print(result)
+        releases = self.release_client.get_releases(
+            self.access_cfg.project, search_text=self.name).value
+        for release in releases:
+            result = self.release_client.get_release(self.access_cfg.project,
+                                                     release_id=release.id)
 
-    class ReleaseAPI:
-        """A connection to the Release Azure DevOps API.
+            for environment in result.environments:
 
-        Parameters:
-            credentials (BasicAuthentication): The credentials used to connect.
-            connection (Connection): The actual connection to the API.
-            work_item_client (WorkItemTrackingClient): A client for work item tracking.
-            work_client (WorkClient): A client for work tracking.
+                if environment.name == self.environment and (
+                        environment.status == "succeeded"
+                        or environment.status == "partiallySucceeded"):
+                    return release.id, environment.id
+
+    def get_release_client(self):
         """
-        def __init__(self, cfg: AccessConfig) -> None:
-            """Connect to the Azure DevOps API using the PBI config.
+        Logins to the Azure DevOps API and gets the release client.
 
-            Args:
-                project (str): The Azure DevOps project to use.
-                cfg (PBIConfig): The config to use to connect to the API.
-            """
-            self.project = cfg.project
-            self._connect(cfg.access_token, cfg.organisation)
-           
-        def _connect(self, access_token: str, organisation: str):
-            """Connect to the Azure DevOps API.
+        Returns:
+            The Release client of the Azure DevOps API.
+        """
+        credentials = BasicAuthentication("", self.access_cfg.access_token)
+        connection = Connection(
+            base_url=f"https://dev.azure.com/{self.access_cfg.organisation}/",
+            creds=credentials)
 
-            Args:
-                access_token (str): The access token to authenticate with.
-                organisation (str): The Azure DevOps organisation to use.
-            """
-            self.credentials = BasicAuthentication("", access_token)
-            self.connection = Connection(
-                base_url=f"https://dev.azure.com/{organisation}/",
-                creds=self.credentials)
-            self.release_client = self.connection.clients.get_release_client()
+        return connection.clients.get_release_client()
 
+    def run_release(self):
+        """
+        Runs the release.
+        """
+        pass
 
-        def get_releases(self, name):
-            print(name)
-            result = self.release_client.get_releases(self.project,
-                                                      search_text=name).value
-
-            return result
+    def get_release_status(self):
+        """
+        Gets the release status.
+        """
+        pass
