@@ -19,7 +19,7 @@ class Release:
         self.access_cfg = access_cfg
         self.release_client = self.get_release_client()
 
-    # self.result = self.get_latest_release()
+        self.result = self.get_latest_release()
 
     def get_latest_release(self) -> Union[int, int]:
         """
@@ -39,7 +39,6 @@ class Release:
                                                      release_id=release.id)
 
             for environment in result.environments:
-
                 if environment.name == self.environment and (
                         environment.status == "succeeded"
                         or environment.status == "partiallySucceeded"):
@@ -58,15 +57,3 @@ class Release:
             creds=credentials)
 
         return connection.clients.get_release_client()
-
-    def run_release(self):
-        """
-        Runs the release.
-        """
-        pass
-
-    def get_release_status(self):
-        """
-        Gets the release status.
-        """
-        pass
