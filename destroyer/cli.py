@@ -10,7 +10,7 @@ from typing import List, Iterable
 
 import click
 import sys
-import config
+from destroyer import config
 from rebuild import rebuild_environment
 
 
