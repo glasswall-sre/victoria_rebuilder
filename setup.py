@@ -24,9 +24,6 @@ setup(
     author="Alex Potter-Dixon",
     author_email="apotter-dixon@glasswallsolutions.com",
     packages=find_packages(),
-    entry_points="""
-        [console_scripts]
-        destroyer=destroyer.cli:main
-    """,
+    ,
     
 )

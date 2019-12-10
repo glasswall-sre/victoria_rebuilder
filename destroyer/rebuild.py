@@ -1,5 +1,5 @@
-from release import Release
-from config import AccessConfig, DeploymentConfig
+from destroyer.release import Release
+from destroyer.config import AccessConfig, DeploymentConfig
 from typing import Union, List
 
 
