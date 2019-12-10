@@ -24,6 +24,6 @@ setup(
     author="Alex Potter-Dixon",
     author_email="apotter-dixon@glasswallsolutions.com",
     packages=find_packages(),
-    ,
+    
     
 )
