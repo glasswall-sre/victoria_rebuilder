@@ -1,6 +1,6 @@
 from azure.devops.connection import Connection
 from msrest.authentication import BasicAuthentication
-from config import AccessConfig
+from destroyer.config import AccessConfig
 from typing import Union
 
 
