@@ -1,0 +1,51 @@
+logging_config:
+  version: 1
+  formatters:
+    default:
+      format: "%(message)s"
+  handlers:
+    console:
+      class: logging.StreamHandler
+      level: DEBUG
+      formatter: default
+      stream: ext://sys.stdout
+  root:
+    level: DEBUG
+    handlers: [console]
+
+***REMOVED***
+  access_token: access-token
+***REMOVED***
+***REMOVED***
+***REMOVED***
+environments:
+  - dev
+  - qa
+  - pent
+  - perf
+  - stage
+
+***REMOVED***
+***REMOVED***
+    pipelines:
+      - Platform.Infrastructure
+***REMOVED***
+    pipelines:
+      - Platform.Kubernetes
+      - Platform.Logging
+      - Platform.Postfix
+      - Platform.Prometheus
+      - Platform.Prometheus.Exporters
+***REMOVED***
+    pipelines:
+      - FileTrust.Common
+      - Glasswall.IdentityServer4
+      - FileTrust.TenancyManagement.Api
+      - FileTrust.Api
+      - FileTrust.StorageAccessService.Api
+      - FileTrust.TransactionReporter.Api.Sql
+      - FileTrust.TransactionReporter.Api
+***REMOVED***
+    pipelines:
+      # * Defines every other pipeline that was missed.
+      - "*"
