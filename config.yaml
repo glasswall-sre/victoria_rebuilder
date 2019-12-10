@@ -14,7 +14,7 @@ logging_config:
     handlers: [console]
 
 ***REMOVED***
-  access_token: 67sc3y3bp37wumt2hd33bmokom5mxa3xkw3ed5y53q3kzbqnuquq
+  access_token: access-token
 ***REMOVED***
 ***REMOVED***
 ***REMOVED***
