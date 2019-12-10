@@ -1,12 +1,29 @@
 import pytest
 
 import destroyer
+from types import SimpleNamespace
 from destroyer import release
 
 
 class MockReleaseClient:
-    def get_releases(self):
-        return [{}]
+    def get_releases(self, *args, **kwargs):
+        release_list = SimpleNamespace()
+        release_list.value = []
+        release = SimpleNamespace()
+        release.id = 123
+        release_list.value.append(release)
+
+        return release_list
+
+    def get_release(self, *args, **kwargs):
+        release = SimpleNamespace()
+        environment = SimpleNamespace()
+        environment.name = "dev"
+        environment.status = "succeeded"
+        environment.id = 321
+        release.environments = [environment]
+
+        return release
 
 
 class MockClients:
@@ -32,7 +49,7 @@ class MockConfig:
     organisation = "mocked_organisation"
 
 
-def create_mock_api(monkeypatch):
+def create_mock_client(monkeypatch):
     monkeypatch.setattr(destroyer.release, "Connection", MockConnection)
     monkeypatch.setattr(destroyer.release, "BasicAuthentication",
                         MockBasicAuthentication)
@@ -41,5 +58,5 @@ def create_mock_api(monkeypatch):
 
 
 @pytest.fixture
-def mock_api(monkeypatch):
-    return create_mock_api(monkeypatch)
+def mock_client(monkeypatch):
+    return create_mock_client(monkeypatch)

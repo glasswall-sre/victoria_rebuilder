@@ -50,33 +50,6 @@ class AccessConfig:
                 and self.email == other.email
 
 
-class StageSchema(Schema):
-    """Marshmallow schema for Stage schema."""
-    pipelines = fields.List(fields.Str)
-    dependsOn = fields.Str()
-
-    @post_load
-    def create_stage_config(self, data, **kwargs):
-        return StageConfig(**data)
-
-
-class StageConfig:
-    """StageConfig is the config for stages.
-
-    Attributes:
-        pipelines (List[str]): The list of pipelines to deploy
-      
-    """
-    def __init__(self, pipelines: List[str], dependsOn: str) -> None:
-        self.pipelines = pipelines
-        self.depends_on = dependsOn
-
-    def __eq__(self, other):
-        if isinstance(self, other.__class__):
-            return self.pipelines == other.pipelines \
-                and self.depends_on == other.depends_on
-
-
 class DeploymentSchema(Schema):
     """Marshmallow schema for deployments."""
 
@@ -124,7 +97,8 @@ class DestroyerConfig:
     Attributes:
         stages (List[StageConfig}): List of stage configurations.
     """
-    def __init__(self, access: AccessConfig, deployments: List[StageConfig],
+    def __init__(self, access: AccessConfig,
+                 deployments: List[DeploymentConfig],
                  environments: List[str]) -> None:
         self.access = access
         self.deployments = deployments

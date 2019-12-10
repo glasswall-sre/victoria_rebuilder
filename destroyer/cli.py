@@ -35,9 +35,6 @@ def rebuild(cfg: str, env: str) -> None:
         destroyer_config.access,
         destroyer_config.deployments,
     )
-    print(destroyer_config.environments)
-
-    pass
 
 
 def main():
