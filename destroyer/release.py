@@ -1,7 +1,7 @@
 from azure.devops.connection import Connection
 from msrest.authentication import BasicAuthentication
 from destroyer.config import AccessConfig
-from typing import Union
+from typing import Tuple
 
 
 class Release:
@@ -21,7 +21,7 @@ class Release:
 
         self.result = self.get_latest_release()
 
-    def get_latest_release(self) -> Union[int, int]:
+    def get_latest_release(self) -> Tuple[int, int]:
         """
         Retrieves the latest release and environment id for a specific environment.
         Gets a list of all the releases for a specific release pipeline, loops
