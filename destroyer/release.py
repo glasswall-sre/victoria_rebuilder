@@ -18,8 +18,10 @@ class Release:
         self.environment = environment
         self.access_cfg = access_cfg
         self.release_client = self.get_release_client()
+        self.release_id, self.environment_id = self.get_latest_release()
 
-        self.result = self.get_latest_release()
+    def is_release_complete(self):
+        return True
 
     def get_latest_release(self) -> Tuple[int, int]:
         """
@@ -29,6 +31,7 @@ class Release:
 
         Returns:
             The ID of the release and environment that was either succeeded or partially succeeded.
+            If nothing is found then None, None is returned
 
         """
 
@@ -44,6 +47,25 @@ class Release:
                         or environment.status == "partiallySucceeded"):
                     return release.id, environment.id
 
+        return None, None
+
+    def run_latest_release(self):
+        """
+        Runs the latest succeeded or partically succeeded pipeline associated
+        with the object.
+        
+        """
+
+        start_values = {
+            "comment": "Run by the DESTROYER",
+            "status": "inProgress"
+        }
+
+        self.release_client.update_release_environment(start_values,
+                                                       self.access_cfg.project,
+                                                       self.release_id,
+                                                       self.environment_id)
+
     def get_release_client(self):
         """
         Logins to the Azure DevOps API and gets the release client.
@@ -56,4 +78,4 @@ class Release:
             base_url=f"https://dev.azure.com/{self.access_cfg.organisation}/",
             creds=credentials)
 
-        return connection.clients.get_release_client()
+        return connection.clients_v5_1.get_release_client()

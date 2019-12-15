@@ -1,6 +1,9 @@
-from destroyer.release import Release
+import time
+from typing import List, Union
+
 from destroyer.config import AccessConfig, DeploymentConfig
-from typing import Union, List
+from destroyer.release import Release
+from destroyer.planner import Planner
 
 
 def rebuild_environment(environment: str, access: AccessConfig,
@@ -16,8 +19,23 @@ def rebuild_environment(environment: str, access: AccessConfig,
 
     """
 
+    planner = Planner(deployments)
+
     for deployment in deployments:
-        run_pipelines(deployment.pipelines, environment, access)
+        releases = run_pipelines(deployment.pipelines, environment, access)
+        wait_to_complete(releases, 10, 2)
+
+
+def wait_to_complete(releases: List[Release], timeout, interval):
+    """
+    Waits for the releases to complete. Loops until 
+    """
+
+    timeout_start = time.time()
+
+    while time.time() < timeout_start + timeout:
+        time.sleep(interval)
+        release_complete = map(lambda releases: releases.is_release_complete())
 
 
 def run_pipelines(pipelines: List[str], environment: str,
@@ -36,4 +54,7 @@ def run_pipelines(pipelines: List[str], environment: str,
 
     for pipeline in pipelines:
         release = Release(pipeline, environment, access)
+        release.run_latest_release()
         releases.append(release)
+
+    return releases

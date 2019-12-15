@@ -1,0 +1,20 @@
+t - stage: deploy_main_infrastructure
+    pipelines:
+      - Platform.Kubernetes
+      - Platform.Logging
+      - Platform.Postfix
+      - Platform.Prometheus
+      - Platform.Prometheus.Exporters
+  - stage: deploy_init_services
+    pipelines:
+      - FileTrust.Common
+      - Glasswall.IdentityServer4
+      - FileTrust.TenancyManagement.Api
+      - FileTrust.Api
+      - FileTrust.StorageAccessService.Api
+      - FileTrust.TransactionReporter.Api.Sql
+      - FileTrust.TransactionReporter.Api
+  - stage: deploy_main_services
+    pipelines:
+      # * Defines every other pipeline that was missed.
+      - "*"
