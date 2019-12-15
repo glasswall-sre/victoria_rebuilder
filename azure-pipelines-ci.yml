@@ -1,7 +1,11 @@
 name: $(BuildDefinitionName)-$(Date:yyyyMMdd)$(Rev:.r)
 pool: Hosted Ubuntu 1604
 trigger:
-- master
+  branches:
+  - master
+pr: 
+  branches:
+  - master
 resources:
   repositories:
   - repository: templates

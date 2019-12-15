@@ -5,13 +5,11 @@ This is the module that contains the Click CLI for the Destroyer
 Author:
     Alex Potter-Dixon <apotter-dixon@glasswallsolutions.com>
 """
-import logging
-from typing import List, Iterable
 
 import click
-import sys
+
 from destroyer import config
-from rebuild import rebuild_environment
+from rebuild import Rebuild
 
 
 @click.group()
@@ -22,6 +20,7 @@ def destroyer():
 
 @destroyer.command()
 def destroy() -> None:
+    """Destroyer placeholder"""
     pass
 
 
@@ -29,15 +28,19 @@ def destroy() -> None:
 @click.argument('cfg', default="./config.yaml", type=click.Path(exists=True))
 @click.argument('env', default='dev', type=str)
 def rebuild(cfg: str, env: str) -> None:
+    """CLI call for rebuilding a specific kubernetes environment"""
     destroyer_config = config.load(cfg)
-    rebuild_environment(
+    env_rebuild = Rebuild(
         env,
         destroyer_config.access,
         destroyer_config.deployments,
     )
 
+    env_rebuild.run_deployments()
+
 
 def main():
+    """Main wrapper for CLI entry point"""
     destroyer()
 
 

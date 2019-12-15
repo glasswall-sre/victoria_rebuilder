@@ -27,5 +27,8 @@ environments:
 
 ***REMOVED***
 ***REMOVED***
-    pipelines:
-      - FileTrust.Blackhole
+***REMOVED***
+      - name: FileTrust.Blackhole
+  - stage: deploy_next_infra
+***REMOVED***
+***REMOVED***
