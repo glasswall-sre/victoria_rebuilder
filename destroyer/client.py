@@ -6,23 +6,13 @@ from msrest.authentication import BasicAuthentication
 from destroyer.config import AccessConfig
 
 
-class Release:
-    """A release in AzureDevOps.
+class Client:
+    def __init__(self, access_cfg: AccessConfig):
 
-    Parameters:
-        name (str): Name of the release pipeline in Azure DevOps.
-        environment (str): The environment the release is to be associated with.
-        access_cfg (AccessConfig): Configuration to log into AzureDevops with.
-    """
-    def __init__(self, name: str, environment: str, access_cfg: AccessConfig):
-        self.name = name
-        self.environment = environment
         self.access_cfg = access_cfg
         self.release_client = self.get_release_client()
-        self.release_id, self.environment_id = self.get_latest_release()
-        self.complete = False
 
-    def is_release_complete(self):
+    def is_release_complete(self, release_id, environment_id):
         """
         Checks to see if a release has finished running for a specific environment.
         Returns:
@@ -30,21 +20,23 @@ class Release:
         """
         release_environment = self.release_client.get_release_environment(
             self.access_cfg.project,
-            release_id=self.release_id,
-            environment_id=self.environment_id)
+            release_id=release_id,
+            environment_id=environment_id)
 
-        if release_environment.status == "failed":
+        if release_environment.status == "failed" or release_environment.status == "cancelled":
             raise RuntimeError("Failed")
-        elif release_environment.status == "succeeded" or release_environment.status == "partiallySucceeded":
-            self.complete = True
 
-        return self.complete
+        return release_environment.status == "succeeded" or release_environment.status == "partiallySucceeded"
 
-    def get_latest_release(self) -> Tuple[int, int]:
+    def get_latest_release(self, name: str, env_name: str) -> Tuple[int, int]:
         """
         Retrieves the latest release and environment id for a specific environment.
         Gets a list of all the releases for a specific release pipeline, loops
         through them and for each release looks for a matching environment and status.
+
+        Arguments:
+            name: (str) Name of the release pipeline.
+            env_name (str): Name of the environment that the release was run.
 
         Returns:
             The ID of the release and environment that was either succeeded or partially succeeded.
@@ -52,21 +44,21 @@ class Release:
 
         """
 
-        releases = self.release_client.get_releases(
-            self.access_cfg.project, search_text=self.name).value
+        releases = self.release_client.get_releases(self.access_cfg.project,
+                                                    search_text=name).value
         for release in releases:
             result = self.release_client.get_release(self.access_cfg.project,
                                                      release_id=release.id)
 
             for environment in result.environments:
-                if environment.name == self.environment and (
+                if environment.name == env_name and (
                         environment.status == "succeeded"
                         or environment.status == "partiallySucceeded"):
                     return release.id, environment.id
 
         return None, None
 
-    def run_latest_release(self):
+    def run_release(self, release_id, environment_id):
         """
         Runs the latest succeeded or partically succeeded pipeline associated
         with the object.
@@ -80,8 +72,8 @@ class Release:
 
         self.release_client.update_release_environment(start_values,
                                                        self.access_cfg.project,
-                                                       self.release_id,
-                                                       self.environment_id)
+                                                       release_id,
+                                                       environment_id)
 
     def get_release_client(self):
         """

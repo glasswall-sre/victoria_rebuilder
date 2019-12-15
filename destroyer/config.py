@@ -50,11 +50,43 @@ class AccessConfig:
                 and self.email == other.email
 
 
+class ReleaseSchema(Schema):
+    """Schema for releases"""
+
+    name = fields.Str()
+
+    @post_load
+    def create_release_config(self, data, **kwargs):
+        return ReleaseConfig(**data)
+
+
+class ReleaseConfig:
+    """ReleaseConfig is the config for releases in Azure Devops.
+
+    Attributes:
+        name (str): Name of the release.
+
+    Parameters:
+        complete (bool): If a release is complete.
+        release_id (int): The release id of the release.
+        environment_id (int): The id of the environment associated with the release.
+    """
+    def __init__(self, name: str) -> None:
+        self.name = name
+        self.complete = False
+        self.release_id = 0
+        self.environment_id = 0
+
+    def __eq__(self, other):
+        if isinstance(self, other.__class__):
+            return self.name == other.name
+
+
 class DeploymentSchema(Schema):
     """Marshmallow schema for deployments."""
 
     stage = fields.Str()
-    pipelines = fields.List(fields.Str())
+    releases = fields.List(fields.Nested(ReleaseSchema))
 
     @post_load
     def create_deployment_config(self, data, **kwargs):
@@ -65,17 +97,18 @@ class DeploymentConfig:
     """StageConfig is the config for stages.
 
     Attributes:
-        pipelines (List[str]): The list of pipelines to deploy.
-      
-      
+        releases (List[str]): The list of releases to deploy.
+
+
     """
-    def __init__(self, pipelines: List[str], stage: str) -> None:
-        self.pipelines = pipelines
+    def __init__(self, releases: List[str], stage: str) -> None:
+        self.releases = releases
         self.stage = stage
+        self.complete = False
 
     def __eq__(self, other):
         if isinstance(self, other.__class__):
-            return self.pipelines == other.pipelines and self.stage == other.stage
+            return self.releases == other.releases and self.stage == other.stage
 
 
 class DestroyerSchema(Schema):

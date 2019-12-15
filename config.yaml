@@ -27,5 +27,8 @@ environments:
 
 deployments:
   - stage: deploy_init_infrastructure
-    pipelines:
-      - FileTrust.Blackhole
+    releases:
+      - name: FileTrust.Blackhole
+  - stage: deploy_next_infra
+    releases:
+      - name: FileTrust.TenantCreation
