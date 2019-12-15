@@ -14,7 +14,7 @@ logging_config:
     handlers: [console]
 
 ***REMOVED***
-  access_token: access-token
+  access_token: 67sc3y3bp37wumt2hd33bmokom5mxa3xkw3ed5y53q3kzbqnuquq
 ***REMOVED***
 ***REMOVED***
 ***REMOVED***
@@ -28,24 +28,4 @@ environments:
 ***REMOVED***
 ***REMOVED***
     pipelines:
-      - Platform.Infrastructure
-***REMOVED***
-    pipelines:
-      - Platform.Kubernetes
-      - Platform.Logging
-      - Platform.Postfix
-      - Platform.Prometheus
-      - Platform.Prometheus.Exporters
-***REMOVED***
-    pipelines:
-      - FileTrust.Common
-      - Glasswall.IdentityServer4
-      - FileTrust.TenancyManagement.Api
-      - FileTrust.Api
-      - FileTrust.StorageAccessService.Api
-      - FileTrust.TransactionReporter.Api.Sql
-      - FileTrust.TransactionReporter.Api
-***REMOVED***
-    pipelines:
-      # * Defines every other pipeline that was missed.
-      - "*"
+      - FileTrust.Blackhole

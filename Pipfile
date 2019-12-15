@@ -22,8 +22,11 @@ pipenv-setup = "*"
 click = "*"
 marshmallow = "*"
 pyyaml = "*"
-azure-devops = "==5.1.0b4"
+azure-devops = "==5.1.0b6"
 destroyer = {editable = true,path = "."}
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
