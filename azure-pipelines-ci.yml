@@ -2,14 +2,14 @@ name: $(BuildDefinitionName)-$(Date:yyyyMMdd)$(Rev:.r)
 pool: Hosted Ubuntu 1604
 trigger:
   branches:
-  - master
-pr: 
-  branches:
-  - master
+    - master
+  pr:
+    branches:
+      - master
 resources:
   repositories:
-  - repository: templates
-    type: git
-    name: Glasswall.Pipelines.Templates
+    - repository: templates
+      type: git
+      name: Glasswall.Pipelines.Templates
 jobs:
-- template: Python/template-ci.yml@templates
+  - template: Python/template-ci.yml@templates
