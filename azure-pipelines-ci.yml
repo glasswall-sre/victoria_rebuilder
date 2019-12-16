@@ -3,9 +3,7 @@ pool: Hosted Ubuntu 1604
 trigger:
   branches:
     - master
-  pr:
-    branches:
-      - master
+
 resources:
   repositories:
     - repository: templates
