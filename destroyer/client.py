@@ -4,6 +4,8 @@ from azure.devops.connection import Connection
 from msrest.authentication import BasicAuthentication
 
 from destroyer.config import AccessConfig
+import logging
+import sys
 
 
 class Client:
@@ -12,7 +14,7 @@ class Client:
         self.access_cfg = access_cfg
         self.release_client = self.get_release_client()
 
-    def is_release_complete(self, release_id, environment_id):
+    def is_release_complete(self, release_id, environment_id, name):
         """
         Checks to see if a release has finished running for a specific environment.
         Returns:
@@ -23,8 +25,11 @@ class Client:
             release_id=release_id,
             environment_id=environment_id)
 
-        if release_environment.status == "failed" or release_environment.status == "cancelled":
-            raise RuntimeError("Failed")
+        if release_environment.status == "rejected" or release_environment.status == "cancelled":
+            logging.critical(
+                f"Release {name} has failed to deploy. The status is {release_environment.status}"
+            )
+            sys.exit(1)
 
         return release_environment.status == "succeeded" or release_environment.status == "partiallySucceeded"
 
@@ -45,16 +50,25 @@ class Client:
         """
 
         releases = self.release_client.get_releases(self.access_cfg.project,
-                                                    search_text=name).value
-        for release in releases:
-            result = self.release_client.get_release(self.access_cfg.project,
-                                                     release_id=release.id)
+                                                    search_text=name,
+                                                    top=200).value
 
-            for environment in result.environments:
-                if environment.name == env_name and (
-                        environment.status == "succeeded"
-                        or environment.status == "partiallySucceeded"):
-                    return release.id, environment.id
+        for release in releases:
+
+            if release.release_definition.name == name:
+
+                result = self.release_client.get_release(
+                    self.access_cfg.project, release_id=release.id)
+                print(release.release_definition.name)
+                for environment in result.environments:
+
+                    if environment.name == env_name and (
+                            environment.status == "succeeded"
+                            or environment.status == "partiallySucceeded"):
+                        logging.info(
+                            f"Found environment for {name} with id: {environment.id} "
+                        )
+                        return release.id, environment.id
 
         return None, None
 

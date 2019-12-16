@@ -14,9 +14,8 @@ import pickle
 import os
 from typing import List, Union
 
-from destroyer.config import AccessConfig, DeploymentConfig
-from destroyer.release import Release
-from destroyer.client import Client
+from destroyer.config import AccessConfig, DeploymentConfig, ReleaseConfig
+from client import Client
 
 STATE_FILE = "rebuild"
 
@@ -35,15 +34,17 @@ class Rebuild:
     def run_deployments(self):
         """
         Rebuilds the environment by running group of deployments.
-        Once a deployment has been completed the next one is run.
+        Once a deployment has been completed its state is saved and
+        the next deployment is run.
         """
         for deployment in self.deployments:
 
             if not deployment.complete:
                 logging.info(f"Running deployment {deployment.stage}")
+
                 self.run_releases(deployment.releases, self.environment,
                                   self.access_cfg)
-                self.wait_to_complete(deployment.releases, 10)
+                self.wait_to_complete(deployment.releases, 30)
                 deployment.complete = True
                 self._save()
 
@@ -61,41 +62,70 @@ class Rebuild:
             access (AccessConfig): The configuration to login into Azure DevOps.
 
         """
-        for release in releases:
+        for release in releases[:]:
             if not release.complete:
-                release.release_id, release.environment_id = self.client.get_latest_release(
-                    release.name, environment)
 
-                self.client.run_release(release.release_id,
-                                        release.environment_id)
+                if not release.release_id:
+                    release.release_id, release.environment_id = self.client.get_latest_release(
+                        release.name, environment)
 
-    def wait_to_complete(self, releases: List[Release], interval):
+                if release.release_id:
+                    self.client.run_release(release.release_id,
+                                            release.environment_id)
+
+                    logging.info(f"Running release {release.name}.")
+                else:
+                    logging.info(
+                        f"Unable to find release for {release.name}. Assuming no environment for release."
+                    )
+                    releases.remove(release)
+            self._save()
+
+    def wait_to_complete(self, releases: List[ReleaseConfig], interval: int):
         """
-        Waits for the releases to complete. Loops until
+        Waits for the releases to complete. Loops until each one is finished or an exception is thrown
+        where the pipeline will crash.
+
+        Arguments:
+            releases (list[ReleaseConfig]): The list of releases to wait for.
+            interval (int): In seconds how often to check if the release is complete.
+
         """
 
         running = True
 
         while running:
             time.sleep(interval)
+
             running = False
             for release in releases:
                 if not release.complete:
                     release.complete = self.client.is_release_complete(
-                        release.release_id, release.environment_id)
-                    if not release.complete: running = True
-                else:
-                    self._save()
+                        release.release_id, release.environment_id,
+                        release.name)
+                    if release.complete:
+                        logging.info(f"{release.name} is complete.")
+                        self._save()
+                    if not release.complete:
+                        running = True
 
     def _load(self):
+        """
+        Loads the pickled file of the current object and de-serializes so it can resume
+        if there's been a crash or an issue with the pipeline.
+        """
         try:
             with open(STATE_FILE, 'rb') as rebuild_obj_file:
                 loaded_dict = pickle.load(rebuild_obj_file)
                 self.__dict__.update(loaded_dict)
         except IOError:
-            print(f"Unable to find rebuild file. Assuming fresh run. ")
+            logging.warn(f"Unable to find rebuild file. Assuming fresh run. ")
 
     def _save(self):
+        """
+        Creates a deep copy of the current state of the object, removes the client
+        connection so it can be pickled, pickles self and saves it to a file.
+        """
         with open(STATE_FILE, 'wb') as rebuild_obj_file:
             current_state = copy.copy(self.__dict__)
 
@@ -104,4 +134,8 @@ class Rebuild:
             pickle.dump(current_state, rebuild_obj_file)
 
     def _clean_up(self):
+        """
+        If the deployment has been successful then the state file
+        is removed.
+        """
         os.remove(STATE_FILE)

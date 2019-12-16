@@ -7,6 +7,7 @@ Author:
 """
 
 import click
+import logging
 
 from destroyer import config
 from rebuild import Rebuild
@@ -26,10 +27,12 @@ def destroy() -> None:
 
 @destroyer.command()
 @click.argument('cfg', default="./config.yaml", type=click.Path(exists=True))
-@click.argument('env', default='dev', type=str)
+@click.option('--env', required=True, type=str)
 def rebuild(cfg: str, env: str) -> None:
     """CLI call for rebuilding a specific kubernetes environment"""
     destroyer_config = config.load(cfg)
+
+    logging.info(f"Rebuilding environment {env} ")
     env_rebuild = Rebuild(
         env,
         destroyer_config.access,
@@ -37,6 +40,8 @@ def rebuild(cfg: str, env: str) -> None:
     )
 
     env_rebuild.run_deployments()
+
+    logging.info(f"Successfully built {env}")
 
 
 def main():
