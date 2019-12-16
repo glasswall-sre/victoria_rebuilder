@@ -6,7 +6,7 @@ validating the config.
 Author:
     Alex Potter-Dixon <apotter-dixon@glasswallsolutions.com>
 """
-import logging
+import logging.config
 from os.path import basename
 from typing import Dict, List
 
@@ -113,6 +113,7 @@ class DeploymentConfig:
 
 class DestroyerSchema(Schema):
     """Mashmallow schema for destroyer."""
+    logging_config = fields.Dict()
     access = fields.Nested(AccessSchema)
     deployments = fields.List(fields.Nested(DeploymentSchema))
     environments = fields.List(fields.Str)
@@ -130,9 +131,11 @@ class DestroyerConfig:
     Attributes:
         stages (List[StageConfig}): List of stage configurations.
     """
-    def __init__(self, ***REMOVED*** AccessConfig,
+    def __init__(self, logging_config: Dict, ***REMOVED*** AccessConfig,
                  ***REMOVED*** List[DeploymentConfig],
                  environments: List[str]) -> None:
+        self.logging_config = logging_config
+        logging.config.dictConfig(logging_config)
         self.access = access
         self.deployments = deployments
         self.environments = environments

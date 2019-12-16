@@ -14,7 +14,7 @@ logging_config:
     handlers: [console]
 
 ***REMOVED***
-  access_token: 67sc3y3bp37wumt2hd33bmokom5mxa3xkw3ed5y53q3kzbqnuquq
+  access_token:
 ***REMOVED***
 ***REMOVED***
 ***REMOVED***
@@ -28,7 +28,52 @@ environments:
 ***REMOVED***
 ***REMOVED***
 ***REMOVED***
-      - name: FileTrust.Blackhole
-  - stage: deploy_next_infra
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***.Certificates
+***REMOVED***.Redis
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***.Exporters
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***.TenantProvision
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***Policy
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
 ***REMOVED***
 ***REMOVED***
