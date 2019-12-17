@@ -2,28 +2,46 @@ import pytest
 
 import destroyer
 from types import SimpleNamespace
-from destroyer import release
+from destroyer import client
+from destroyer import config
+from destroyer import rebuild
+from munch import munchify
 
 
 class MockReleaseClient:
     def get_releases(self, *args, **kwargs):
-        release_list = SimpleNamespace()
-        release_list.value = []
-        release = SimpleNamespace()
-        release.id = 123
-        release_list.value.append(release)
 
-        return release_list
+        release_list = {
+            "value": [{
+                "id": 123,
+                "release_definition": {
+                    "name": "Platform.Infrastructure"
+                }
+            }]
+        }
+
+        return munchify(release_list)
 
     def get_release(self, *args, **kwargs):
-        release = SimpleNamespace()
-        environment = SimpleNamespace()
-        environment.name = "dev"
-        environment.status = "succeeded"
-        environment.id = 321
-        release.environments = [environment]
 
-        return release
+        release = {
+            "environments": [{
+                "name": "pent",
+                "status": "succeeded",
+                "id": 321
+            }]
+        }
+
+        return munchify(release)
+
+    def get_release_environment(self, *args, **kwargs):
+        print(args)
+        release_environment = {"status": "rejected"}
+
+        return munchify(release_environment)
+
+    def update_release_environment(self, *args, **kwargs):
+        return "Done"
 
 
 class MockClients:
@@ -37,7 +55,7 @@ class MockBasicAuthentication:
 
 
 class MockConnection:
-    clients = MockClients()
+    clients_v5_1 = MockClients()
 
     def __init__(self, *args, **kwargs):
         pass
@@ -50,13 +68,32 @@ class MockConfig:
 
 
 def create_mock_client(monkeypatch):
-    monkeypatch.setattr(destroyer.release, "Connection", MockConnection)
-    monkeypatch.setattr(destroyer.release, "BasicAuthentication",
+    monkeypatch.setattr(destroyer.client, "Connection", MockConnection)
+    monkeypatch.setattr(destroyer.client, "BasicAuthentication",
                         MockBasicAuthentication)
 
-    return release.Release("Platform.Infrastructure", "dev", MockConfig())
+    return client.Client(MockConfig())
 
 
 @pytest.fixture
 def mock_client(monkeypatch):
     return create_mock_client(monkeypatch)
+
+
+def create_mock_rebuild(monkeypatch, mock_client):
+
+    monkeypatch.setattr(destroyer.client, "Connection", MockConnection)
+    monkeypatch.setattr(destroyer.client, "BasicAuthentication",
+                        MockBasicAuthentication)
+    # monkeypatch.setattr(destroyer.rebuild, "Client", mock_client)
+
+    destroyer_config = config.load("tests/destroyer/test_config.yaml")
+
+    return rebuild.Rebuild("pent", destroyer_config.access,
+                           destroyer_config.deployments)
+
+
+@pytest.fixture
+def mock_rebuild(monkeypatch, mock_client):
+
+    return create_mock_rebuild(monkeypatch, mock_client)

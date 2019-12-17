@@ -1,18 +1,25 @@
 import pytest
 
-from destroyer.config import DestroyerConfig, DestroyerSchema, AccessConfig, AccessSchema, DeploymentConfig, DeploymentSchema
+from destroyer.config import DestroyerConfig, DestroyerSchema, ReleaseConfig, AccessConfig, AccessSchema, DeploymentConfig, DeploymentSchema
 
 
 def test_create_deployment_config():
 
-    result = DeploymentSchema().load({
-        "pipelines": ["Platform.test", "Platform.test2"],
+    result_schema = DeploymentSchema().load({
+        "releases": [{
+            "name": "Platform.test"
+        }, {
+            "name": "Platform.test2"
+        }],
         "stage":
         "test"
     })
 
-    assert result == DeploymentConfig(["Platform.test", "Platform.test2"],
-                                      "test")
+    result_object = DeploymentConfig(
+        [ReleaseConfig("Platform.test"),
+         ReleaseConfig("Platform.test2")], "test")
+
+    assert result_schema == result_object
 
 
 def test_create_access_config():
@@ -38,16 +45,28 @@ def test_create_destroy_config():
             "email": "testemail@email.com"
         },
         "deployments": [{
-            "stage": "test",
-            "pipelines": ["Platform.test", "Platform.test2"]
+            "stage":
+            "test",
+            "releases": [{
+                "name": "Platform.test"
+            }, {
+                "name": "Platform.test2"
+            }]
         }],
-        "environments": ["dev", "qa", "pent", "perf"]
+        "logging_config": {
+            "version": 1
+        }
     })
 
-    print(result.access.email)
-
+    logging_config = {"version": 1}
     assert result == DestroyerConfig(
+        logging_config,
         AccessConfig("12344", "glasswall", "Test_project",
                      "testemail@email.com"),
-        [DeploymentConfig(["Platform.test", "Platform.test2"], "test")],
-        ["dev", "qa", "pent", "perf"])
+        [
+            DeploymentConfig([
+                ReleaseConfig("Platform.test"),
+                ReleaseConfig("Platform.test2")
+            ], "test")
+        ],
+    )

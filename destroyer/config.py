@@ -101,7 +101,7 @@ class DeploymentConfig:
 
 
     """
-    def __init__(self, releases: List[str], stage: str) -> None:
+    def __init__(self, releases: List[ReleaseConfig], stage: str) -> None:
         self.releases = releases
         self.stage = stage
         self.complete = False
@@ -131,20 +131,22 @@ class DestroyerConfig:
     Attributes:
         stages (List[StageConfig}): List of stage configurations.
     """
-    def __init__(self, logging_config: Dict, ***REMOVED*** AccessConfig,
-                 ***REMOVED*** List[DeploymentConfig],
-                 environments: List[str]) -> None:
+    def __init__(
+            self,
+            logging_config: Dict,
+            ***REMOVED*** AccessConfig,
+            ***REMOVED*** List[DeploymentConfig],
+    ) -> None:
         self.logging_config = logging_config
         logging.config.dictConfig(logging_config)
         self.access = access
         self.deployments = deployments
-        self.environments = environments
 
     def __eq__(self, other):
         if isinstance(self, other.__class__):
             return self.access == other.access \
                    and self.deployments == other.deployments \
-                   and self.environments == other.environments
+                   and self.logging_config == other.logging_config
 
 
 CONFIG_SCHEMA = DestroyerSchema(unknown=EXCLUDE)

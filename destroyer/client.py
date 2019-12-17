@@ -59,7 +59,7 @@ class Client:
 
                 result = self.release_client.get_release(
                     self.access_cfg.project, release_id=release.id)
-                print(release.release_definition.name)
+
                 for environment in result.environments:
 
                     if environment.name == env_name and (
