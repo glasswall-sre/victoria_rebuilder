@@ -18,12 +18,6 @@ access:
   organisation: glasswall
   project: Glasswall Cloud
   email: apotter-dixon@glasswallsolutions.com
-environments:
-  - dev
-  - qa
-  - pent
-  - perf
-  - stage
 
 deployments:
   - stage: deploy_init_infrastructure

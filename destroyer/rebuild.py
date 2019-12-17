@@ -15,7 +15,7 @@ import os
 from typing import List, Union
 
 from destroyer.config import AccessConfig, DeploymentConfig, ReleaseConfig
-from client import Client
+from destroyer.client import Client
 
 STATE_FILE = "rebuild"
 
@@ -119,7 +119,8 @@ class Rebuild:
                 loaded_dict = pickle.load(rebuild_obj_file)
                 self.__dict__.update(loaded_dict)
         except IOError:
-            logging.warn(f"Unable to find rebuild file. Assuming fresh run. ")
+            logging.warning(
+                f"Unable to find rebuild file. Assuming fresh run. ")
 
     def _save(self):
         """
