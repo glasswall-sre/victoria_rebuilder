@@ -20,16 +20,19 @@ def destroyer():
 
 
 @destroyer.command()
-def destroy() -> None:
-    """Destroyer placeholder"""
-    pass
-
-
-@destroyer.command()
 @click.argument('cfg', default="./config.yaml", type=click.Path(exists=True))
-@click.option('--env', required=True, type=str)
+@click.option('--env',
+              required=True,
+              type=str,
+              prompt="Environment",
+              help="Environment you want to rebuild.")
 def rebuild(cfg: str, env: str) -> None:
-    """CLI call for rebuilding a specific kubernetes environment"""
+    """
+    CLI call for rebuilding a specific kubernetes environment
+    Arguments:
+        cfg (str): Path to the config file.
+        env (str): Environment to rebuild.  
+    """
     destroyer_config = config.load(cfg)
 
     logging.info(f"Rebuilding environment {env} ")
