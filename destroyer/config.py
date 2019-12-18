@@ -6,7 +6,7 @@ validating the config.
 Author:
     Alex Potter-Dixon <apotter-dixon@glasswallsolutions.com>
 """
-import logging
+import logging.config
 from os.path import basename
 from typing import Dict, List
 
@@ -48,13 +48,47 @@ class AccessConfig:
                 and self.organisation == other.organisation \
                 and self.project == other.project \
                 and self.email == other.email
+        return False
+
+
+class ReleaseSchema(Schema):
+    """Schema for releases"""
+
+    name = fields.Str()
+
+    @post_load
+    def create_release_config(self, data, **kwargs):
+        return ReleaseConfig(**data)
+
+
+class ReleaseConfig:
+    """ReleaseConfig is the config for releases in Azure Devops.
+
+    Attributes:
+        name (str): Name of the release.
+
+    Parameters:
+        complete (bool): If a release is complete.
+        release_id (int): The release id of the release.
+        environment_id (int): The id of the environment associated with the release.
+    """
+    def __init__(self, name: str) -> None:
+        self.name = name
+        self.complete = False
+        self.release_id = 0
+        self.environment_id = 0
+
+    def __eq__(self, other):
+        if isinstance(self, other.__class__):
+            return self.name == other.name
+        return False
 
 
 class DeploymentSchema(Schema):
     """Marshmallow schema for deployments."""
 
     stage = fields.Str()
-    pipelines = fields.List(fields.Str())
+    releases = fields.List(fields.Nested(ReleaseSchema))
 
     @post_load
     def create_deployment_config(self, data, **kwargs):
@@ -65,21 +99,24 @@ class DeploymentConfig:
     """StageConfig is the config for stages.
 
     Attributes:
-        pipelines (List[str]): The list of pipelines to deploy.
-      
-      
+        releases (List[str]): The list of releases to deploy.
+
+
     """
-    def __init__(self, pipelines: List[str], stage: str) -> None:
-        self.pipelines = pipelines
+    def __init__(self, releases: List[ReleaseConfig], stage: str) -> None:
+        self.releases = releases
         self.stage = stage
+        self.complete = False
 
     def __eq__(self, other):
         if isinstance(self, other.__class__):
-            return self.pipelines == other.pipelines and self.stage == other.stage
+            return self.releases == other.releases and self.stage == other.stage
+        return False
 
 
 class DestroyerSchema(Schema):
     """Mashmallow schema for destroyer."""
+    logging_config = fields.Dict()
     access = fields.Nested(AccessSchema)
     deployments = fields.List(fields.Nested(DeploymentSchema))
     environments = fields.List(fields.Str)
@@ -97,18 +134,23 @@ class DestroyerConfig:
     Attributes:
         stages (List[StageConfig}): List of stage configurations.
     """
-    def __init__(self, ***REMOVED*** AccessConfig,
-                 ***REMOVED*** List[DeploymentConfig],
-                 environments: List[str]) -> None:
+    def __init__(
+            self,
+            logging_config: Dict,
+            ***REMOVED*** AccessConfig,
+            ***REMOVED*** List[DeploymentConfig],
+    ) -> None:
+        self.logging_config = logging_config
+        logging.config.dictConfig(logging_config)
         self.access = access
         self.deployments = deployments
-        self.environments = environments
 
     def __eq__(self, other):
         if isinstance(self, other.__class__):
             return self.access == other.access \
                    and self.deployments == other.deployments \
-                   and self.environments == other.environments
+                   and self.logging_config == other.logging_config
+        return False
 
 
 CONFIG_SCHEMA = DestroyerSchema(unknown=EXCLUDE)

@@ -14,38 +14,60 @@ logging_config:
     handlers: [console]
 
 ***REMOVED***
-  access_token: access-token
+  access_token:
 ***REMOVED***
 ***REMOVED***
 ***REMOVED***
-environments:
-  - dev
-  - qa
-  - pent
-  - perf
-  - stage
 
 ***REMOVED***
 ***REMOVED***
-    pipelines:
-      - Platform.Infrastructure
 ***REMOVED***
-    pipelines:
-      - Platform.Kubernetes
-      - Platform.Logging
-      - Platform.Postfix
-      - Platform.Prometheus
-      - Platform.Prometheus.Exporters
 ***REMOVED***
-    pipelines:
-      - FileTrust.Common
-      - Glasswall.IdentityServer4
-      - FileTrust.TenancyManagement.Api
-      - FileTrust.Api
-      - FileTrust.StorageAccessService.Api
-      - FileTrust.TransactionReporter.Api.Sql
-      - FileTrust.TransactionReporter.Api
 ***REMOVED***
-    pipelines:
-      # * Defines every other pipeline that was missed.
-      - "*"
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***.Certificates
+***REMOVED***.Redis
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***.Exporters
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***.TenantProvision
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***Policy
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
