@@ -15,7 +15,9 @@ from rebuild import Rebuild
 
 @click.group()
 def destroyer():
-    """Wrapper for cli"""
+    """
+    The Destroyer allows the destruction and rebuilding of environments via CLI. 
+    """
     pass
 
 
