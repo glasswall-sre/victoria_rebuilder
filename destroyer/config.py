@@ -48,6 +48,7 @@ class AccessConfig:
                 and self.organisation == other.organisation \
                 and self.project == other.project \
                 and self.email == other.email
+        return False
 
 
 class ReleaseSchema(Schema):
@@ -80,6 +81,7 @@ class ReleaseConfig:
     def __eq__(self, other):
         if isinstance(self, other.__class__):
             return self.name == other.name
+        return False
 
 
 class DeploymentSchema(Schema):
@@ -109,6 +111,7 @@ class DeploymentConfig:
     def __eq__(self, other):
         if isinstance(self, other.__class__):
             return self.releases == other.releases and self.stage == other.stage
+        return False
 
 
 class DestroyerSchema(Schema):
@@ -147,6 +150,7 @@ class DestroyerConfig:
             return self.access == other.access \
                    and self.deployments == other.deployments \
                    and self.logging_config == other.logging_config
+        return False
 
 
 CONFIG_SCHEMA = DestroyerSchema(unknown=EXCLUDE)
