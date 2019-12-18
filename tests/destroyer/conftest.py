@@ -34,9 +34,12 @@ class MockReleaseClient:
 
         return munchify(release)
 
-    def get_release_environment(self, *args, **kwargs):
-        print(args)
-        release_environment = {"status": "rejected"}
+    def get_release_environment(self, project, release_id, environment_id):
+        release_environment = {}
+        if environment_id == 321:
+            release_environment = {"status": "rejected"}
+        elif environment_id == 432:
+            release_environment = {"status": "succeeded"}
 
         return munchify(release_environment)
 
@@ -72,7 +75,7 @@ def create_mock_client(monkeypatch):
     monkeypatch.setattr(destroyer.client, "BasicAuthentication",
                         MockBasicAuthentication)
 
-    return client.Client(MockConfig())
+    return client.DevOpsClient(MockConfig())
 
 
 @pytest.fixture
@@ -85,7 +88,6 @@ def create_mock_rebuild(monkeypatch, mock_client):
     monkeypatch.setattr(destroyer.client, "Connection", MockConnection)
     monkeypatch.setattr(destroyer.client, "BasicAuthentication",
                         MockBasicAuthentication)
-    # monkeypatch.setattr(destroyer.rebuild, "Client", mock_client)
 
     destroyer_config = config.load("tests/destroyer/test_config.yaml")
 

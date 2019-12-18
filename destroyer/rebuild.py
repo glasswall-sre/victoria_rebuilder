@@ -15,8 +15,9 @@ import os
 from typing import List, Union
 
 from destroyer.config import AccessConfig, DeploymentConfig, ReleaseConfig
-from destroyer.client import Client
+from destroyer.client import DevOpsClient
 
+# The location of the state file.
 STATE_FILE = "rebuild"
 
 
@@ -29,7 +30,7 @@ class Rebuild:
         self.access_cfg = access_cfg
         self.deployments = deployments
         self._load()
-        self.client = Client(access_cfg)
+        self.client = DevOpsClient(access_cfg)
 
     def run_deployments(self):
         """
@@ -42,25 +43,29 @@ class Rebuild:
             if not deployment.complete:
                 logging.info(f"Running deployment {deployment.stage}")
 
-                self.run_releases(deployment.releases, self.environment,
-                                  self.access_cfg)
-                self.wait_to_complete(deployment.releases, 30)
+                deployment.releases = self.run_releases(
+                    deployment.releases, self.environment)
+                deployment.releases = self.wait_to_complete(
+                    deployment.releases, 30)
                 deployment.complete = True
                 self._save()
 
             logging.info(f"Deployment {deployment.stage} has completed.")
         self._clean_up()
 
-    def run_releases(self, releases: List[str], environment: str,
-                     access: AccessConfig) -> None:
+    def run_releases(self, releases: List[str],
+                     environment: str) -> List[ReleaseConfig]:
         """
         Runs a list of releases associated to a specific deployment and environment.
+        If it can't find the release it assumes its not available for that environment
+        so it is removed from the list.
 
         Arguments:
             releases (List[str]): List of releases that need running.
             environment (str): The environment to run the releases on.
-            access (AccessConfig): The configuration to login into Azure DevOps.
-
+          
+        Returns:
+            A list of Releases (ReleaseConfig). Releases that weren't found would of been removed. 
         """
         for release in releases[:]:
             if not release.complete:
@@ -81,14 +86,20 @@ class Rebuild:
                     releases.remove(release)
             self._save()
 
-    def wait_to_complete(self, releases: List[ReleaseConfig], interval: int):
+        return releases
+
+    def wait_to_complete(self, releases: List[ReleaseConfig],
+                         interval: int) -> List[ReleaseConfig]:
         """
-        Waits for the releases to complete. Loops until each one is finished or an exception is thrown
-        where the pipeline will crash.
+        Waits for the releases to complete. 
 
         Arguments:
             releases (list[ReleaseConfig]): The list of releases to wait for.
             interval (int): In seconds how often to check if the release is complete.
+        
+        Returns:
+            A list of releases (ReleaseConfig)
+            Once all the releases are complete it returns the list of releases.
 
         """
 
@@ -109,18 +120,19 @@ class Rebuild:
                     if not release.complete:
                         running = True
 
+        return releases
+
     def _load(self):
         """
         Loads the pickled file of the current object and de-serializes so it can resume
         if there's been a crash or an issue with the pipeline.
         """
-        try:
+        if os.path.exists(STATE_FILE):
             with open(STATE_FILE, 'rb') as rebuild_obj_file:
                 loaded_dict = pickle.load(rebuild_obj_file)
                 self.__dict__.update(loaded_dict)
-        except IOError:
-            logging.warning(
-                f"Unable to find rebuild file. Assuming fresh run. ")
+        else:
+            logging.info(f"Unable to find rebuild file. Assuming fresh run. ")
 
     def _save(self):
         """

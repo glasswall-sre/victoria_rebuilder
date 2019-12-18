@@ -14,7 +14,7 @@ def test_get_latest_release(mock_client):
 def test_release_complete_exit(mock_client):
 
     try:
-        mock_client.is_release_complete("Test_Project", 123, 321)
+        mock_client.is_release_complete("Test_Project", 321, 123)
         assert (False)
     except SystemExit:
         pass
