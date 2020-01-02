@@ -19,7 +19,7 @@ setup(
         "click", "marshmallow", "pyyaml", "requests", "azure-devops"
     ],
     name="destroyer",
-    version="0.2.0",
+    version="#{TAG_NAME}#",
     description="Allows the creation and DESTRUCTION of SAAS on the cloud.",
     long_description=repo_file_as_string("README.md"),
     long_description_content_type="text/markdown",
