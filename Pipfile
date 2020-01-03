@@ -23,8 +23,9 @@ click = "*"
 marshmallow = "*"
 pyyaml = "*"
 azure-devops = "==5.1.0b6"
-destroyer = {editable = true,path = "."}
+victoria_destroyer = {editable = true,path = "."}
 munch = "*"
+victoria = {index = "sre",version = "*"}
 
 [requires]
 python_version = "3.7"
