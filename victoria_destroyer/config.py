@@ -53,7 +53,6 @@ class AccessConfig:
 
 class ReleaseSchema(Schema):
     """Schema for releases"""
-
     name = fields.Str()
 
     @post_load
@@ -86,7 +85,6 @@ class ReleaseConfig:
 
 class DeploymentSchema(Schema):
     """Marshmallow schema for deployments."""
-
     stage = fields.Str()
     releases = fields.List(fields.Nested(ReleaseSchema))
 
@@ -115,8 +113,7 @@ class DeploymentConfig:
 
 
 class DestroyerSchema(Schema):
-    """Mashmallow schema for destroyer."""
-    logging_config = fields.Dict()
+    """Marshmallow schema for destroyer."""
     access = fields.Nested(AccessSchema)
     deployments = fields.List(fields.Nested(DeploymentSchema))
     environments = fields.List(fields.Str)
@@ -136,54 +133,19 @@ class DestroyerConfig:
     """
     def __init__(
             self,
-            logging_config: Dict,
             access: AccessConfig,
             deployments: List[DeploymentConfig],
     ) -> None:
-        self.logging_config = logging_config
-        logging.config.dictConfig(logging_config)
+
         self.access = access
         self.deployments = deployments
 
     def __eq__(self, other):
         if isinstance(self, other.__class__):
             return self.access == other.access \
-                   and self.deployments == other.deployments \
-                   and self.logging_config == other.logging_config
+                   and self.deployments == other.deployments
         return False
 
 
 CONFIG_SCHEMA = DestroyerSchema(unknown=EXCLUDE)
 """Instance of ConfigSchema to use for validation."""
-
-
-def __print_validation_err(err: ValidationError, name: str) -> None:
-    """Internal function used for logging a validation error in the Schema.
-
-    Args:
-        err (ValidationError): The error to log.
-        name (str): A human-readable identifier for the Schema data source. Like a filename.
-    """
-    # build up a string for each error
-    log_str = []
-    log_str.append(f"Error loading file '{name}':")
-    for field_name, err_msgs in err.messages.items():
-        log_str.append(f"{field_name}: {err_msgs}")
-
-    # log the joined up string, and exit with an error
-    logging.critical(" ".join(log_str))
-    raise SystemExit(1)
-
-
-def load(config_file_path: str) -> DeploymentConfig:
-    """Load a config file from a given path."""
-    logging.info(f"Loading config file '{basename(config_file_path)}'")
-    with open(config_file_path, "r") as config_file:
-        raw_config = yaml.safe_load(config_file)
-        try:
-
-            loaded_config = CONFIG_SCHEMA.load(raw_config)
-            return loaded_config
-        except ValidationError as err:
-            # print any errors if there are any
-            __print_validation_err(err, basename(config_file_path))

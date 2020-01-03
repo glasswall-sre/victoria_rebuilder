@@ -1,10 +1,10 @@
 import pytest
 
-import destroyer
+import victoria_destroyer
 from types import SimpleNamespace
-from destroyer import client
-from destroyer import config
-from destroyer import rebuild
+from victoria_destroyer import client
+from victoria_destroyer import config
+from victoria_destroyer.rebuild import Rebuild
 from munch import munchify
 
 
@@ -71,8 +71,9 @@ class MockConfig:
 
 
 def create_mock_client(monkeypatch):
-    monkeypatch.setattr(destroyer.client, "Connection", MockConnection)
-    monkeypatch.setattr(destroyer.client, "BasicAuthentication",
+    monkeypatch.setattr(victoria_destroyer.client, "Connection",
+                        MockConnection)
+    monkeypatch.setattr(victoria_destroyer.client, "BasicAuthentication",
                         MockBasicAuthentication)
 
     return client.DevOpsClient(MockConfig())
@@ -85,14 +86,31 @@ def mock_client(monkeypatch):
 
 def create_mock_rebuild(monkeypatch, mock_client):
 
-    monkeypatch.setattr(destroyer.client, "Connection", MockConnection)
-    monkeypatch.setattr(destroyer.client, "BasicAuthentication",
+    monkeypatch.setattr(victoria_destroyer.client, "Connection",
+                        MockConnection)
+    monkeypatch.setattr(victoria_destroyer.client, "BasicAuthentication",
                         MockBasicAuthentication)
 
-    destroyer_config = config.load("tests/destroyer/test_config.yaml")
+    destroyer_config = config.DestroyerSchema().load({
+        "access": {
+            "access_token": "12344",
+            "organisation": "glasswall",
+            "project": "Test_project",
+            "email": "testemail@email.com"
+        },
+        "deployments": [{
+            "stage":
+            "pent",
+            "releases": [{
+                "name": "Platform.Infrastructure"
+            }, {
+                "name": "Platform.test2"
+            }]
+        }]
+    })
 
-    return rebuild.Rebuild("pent", destroyer_config.access,
-                           destroyer_config.deployments)
+    return Rebuild("pent", destroyer_config.access,
+                   destroyer_config.deployments)
 
 
 @pytest.fixture

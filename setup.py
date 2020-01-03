@@ -16,11 +16,13 @@ def repo_file_as_string(file_path: str) -> str:
 setup(
     dependency_links=[],
     install_requires=[
-        "click", "marshmallow", "pyyaml", "requests", "azure-devops"
+        "click", "marshmallow", "pyyaml", "requests", "azure-devops",
+        "victoria"
     ],
-    name="destroyer",
+    name="victoria_destroyer",
     version="#{TAG_NAME}#",
-    description="Allows the creation and DESTRUCTION of SAAS on the cloud.",
+    description=
+    "Victoria Plugin that allows the creation and DESTRUCTION of SAAS on the cloud.",
     long_description=repo_file_as_string("README.md"),
     long_description_content_type="text/markdown",
     author="Alex Potter-Dixon",
