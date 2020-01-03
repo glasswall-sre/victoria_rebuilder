@@ -53,7 +53,6 @@ class AccessConfig:
 
 class ReleaseSchema(Schema):
     """Schema for releases"""
-
     name = fields.Str()
 
     @post_load
@@ -86,7 +85,6 @@ class ReleaseConfig:
 
 class DeploymentSchema(Schema):
     """Marshmallow schema for deployments."""
-
     stage = fields.Str()
     releases = fields.List(fields.Nested(ReleaseSchema))
 
@@ -115,8 +113,7 @@ class DeploymentConfig:
 
 
 class DestroyerSchema(Schema):
-    """Mashmallow schema for destroyer."""
-
+    """Marshmallow schema for destroyer."""
     access = fields.Nested(AccessSchema)
     deployments = fields.List(fields.Nested(DeploymentSchema))
     environments = fields.List(fields.Str)
