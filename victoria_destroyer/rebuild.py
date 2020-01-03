@@ -14,8 +14,8 @@ import pickle
 import os
 from typing import List, Union
 
-from destroyer.config import AccessConfig, DeploymentConfig, ReleaseConfig
-from destroyer.client import DevOpsClient
+from victoria_destroyer.config import AccessConfig, DeploymentConfig, ReleaseConfig
+from victoria_destroyer.client import DevOpsClient
 
 # The location of the state file.
 STATE_FILE = "rebuild"

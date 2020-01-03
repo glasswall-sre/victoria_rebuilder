@@ -12,7 +12,7 @@ from typing import Tuple, Union
 from azure.devops.connection import Connection
 from msrest.authentication import BasicAuthentication
 
-from destroyer.config import AccessConfig
+from victoria_destroyer.config import AccessConfig
 import logging
 import sys
 
