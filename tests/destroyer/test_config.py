@@ -52,15 +52,10 @@ def test_create_destroy_config():
             }, {
                 "name": "Platform.test2"
             }]
-        }],
-        "logging_config": {
-            "version": 1
-        }
+        }]
     })
 
-    logging_config = {"version": 1}
     assert result == DestroyerConfig(
-        logging_config,
         AccessConfig("12344", "glasswall", "Test_project",
                      "testemail@email.com"),
         [

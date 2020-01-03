@@ -91,7 +91,23 @@ def create_mock_rebuild(monkeypatch, mock_client):
     monkeypatch.setattr(victoria_destroyer.client, "BasicAuthentication",
                         MockBasicAuthentication)
 
-    destroyer_config = config.load("tests/destroyer/test_config.yaml")
+    destroyer_config = config.DestroyerSchema().load({
+        "access": {
+            "access_token": "12344",
+            "organisation": "glasswall",
+            "project": "Test_project",
+            "email": "testemail@email.com"
+        },
+        "deployments": [{
+            "stage":
+            "pent",
+            "releases": [{
+                "name": "Platform.Infrastructure"
+            }, {
+                "name": "Platform.test2"
+            }]
+        }]
+    })
 
     return Rebuild("pent", destroyer_config.access,
                    destroyer_config.deployments)
