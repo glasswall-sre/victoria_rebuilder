@@ -1,6 +1,6 @@
 from click.testing import CliRunner
 import pytest
-from destroyer.cli import destroyer
+from victoria_destroyer.cli import destroyer
 from conftest import create_mock_client
 
 

@@ -1,6 +1,6 @@
 import pytest
 
-from destroyer.config import DestroyerConfig, DestroyerSchema, ReleaseConfig, AccessConfig, AccessSchema, DeploymentConfig, DeploymentSchema
+from victoria_destroyer.config import DestroyerConfig, DestroyerSchema, ReleaseConfig, AccessConfig, AccessSchema, DeploymentConfig, DeploymentSchema
 
 
 def test_create_deployment_config():

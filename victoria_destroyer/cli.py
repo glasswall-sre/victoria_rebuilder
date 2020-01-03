@@ -9,12 +9,13 @@ Author:
 import click
 import logging
 
-from destroyer import config
-from rebuild import Rebuild
+from .config import DestroyerConfig
+from .rebuild import Rebuild
 
 
 @click.group()
-def destroyer():
+@click.pass_obj
+def destroyer(cfg: DestroyerConfig):
     """
     The Destroyer allows the destruction and rebuilding of environments via CLI. 
     """
@@ -22,37 +23,27 @@ def destroyer():
 
 
 @destroyer.command()
-@click.argument('cfg', default="./config.yaml", type=click.Path(exists=True))
 @click.option('--env',
               required=True,
               type=str,
               prompt="Environment",
               help="Environment you want to rebuild.")
-def rebuild(cfg: str, env: str) -> None:
+@click.pass_obj
+def rebuild(cfg: DestroyerConfig, env: str) -> None:
     """
     CLI call for rebuilding a specific kubernetes environment
     Arguments:
         cfg (str): Path to the config file.
         env (str): Environment to rebuild.  
     """
-    destroyer_config = config.load(cfg)
 
     logging.info(f"Rebuilding environment {env} ")
     env_rebuild = Rebuild(
         env,
-        destroyer_config.access,
-        destroyer_config.deployments,
+        cfg.access,
+        cfg.deployments,
     )
 
     env_rebuild.run_deployments()
 
     logging.info(f"Successfully built {env}")
-
-
-def main():
-    """Main wrapper for CLI entry point"""
-    destroyer()
-
-
-if __name__ == '__main__':
-    main()
