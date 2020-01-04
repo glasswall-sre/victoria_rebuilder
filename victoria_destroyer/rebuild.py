@@ -2,7 +2,8 @@
 Runs and holds the states of deployments for a particular environment.
 
 Parameters:
-    environment (str): The environment to rebuild.
+    from_environment (str): The environment to rebuild from.
+    to_environment (str): The environment to rebuild.
     access_cfg (AccessConfig): The configuration to access AzureDevOps.
     deployments (DeploymentConfig): The configuration to process the deployments.
 
@@ -22,11 +23,12 @@ STATE_FILE = "rebuild"
 
 
 class Rebuild:
-    def __init__(self, environment: str, access_cfg: AccessConfig,
-                 deployments: DeploymentConfig):
+    def __init__(self, from_environment: str, target_environment: str,
+                 access_cfg: AccessConfig, deployments: DeploymentConfig):
 
         self.deployments = deployments
-        self.environment = environment
+        self.from_environment = from_environment
+        self.target_environment = target_environment
         self.access_cfg = access_cfg
         self.deployments = deployments
         self._load()
