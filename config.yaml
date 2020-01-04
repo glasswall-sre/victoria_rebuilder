@@ -14,7 +14,7 @@ logging_config:
     handlers: [console]
 
 access:
-  access_token:
+  access_token: insert-token
   organisation: glasswall
   project: Glasswall Cloud
   email: apotter-dixon@glasswallsolutions.com
