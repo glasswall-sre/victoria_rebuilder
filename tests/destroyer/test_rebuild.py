@@ -32,7 +32,7 @@ def test_run_releases_removes_unfound(mock_rebuild):
         "release_id": 0
     }
     releases = [munchify(release)]
-    releases = mock_rebuild.run_releases(releases, "pent")
+    releases = mock_rebuild.run_releases(releases, "qa", "pent")
 
     assert not releases
 
