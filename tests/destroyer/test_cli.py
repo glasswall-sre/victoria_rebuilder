@@ -8,4 +8,3 @@ from conftest import create_mock_client
 def mock_cli(monkeypatch):
     def create_client(*args, **kwargs):
         return create_mock_client(monkeypatch)
-
