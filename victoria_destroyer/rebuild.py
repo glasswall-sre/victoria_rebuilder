@@ -140,7 +140,7 @@ class Rebuild:
         """
         if fresh:
             self._clean_up()
-            logging.info(f"Fresh run so removed previous state file.")
+            logging.info(f"Fresh run so have removed the previous state file.")
         else:
             if os.path.exists(STATE_FILE):
                 with open(STATE_FILE, 'rb') as rebuild_obj_file:
