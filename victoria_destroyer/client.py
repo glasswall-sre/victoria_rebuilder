@@ -52,18 +52,19 @@ class DevOpsClient:
 
         return release_environment.status == "succeeded" or release_environment.status == "partiallySucceeded"
 
-    def get_latest_release(
+    def get_latest_successful_release(
             self, name: str, from_env: str,
             target_env: str) -> Union[Tuple[None, None], Tuple[int, int]]:
         """
-        Retrieves the latest release and environment id for a specific environment.
+        Gets the release and environment id for a target environment based off a base environments most
+        recent successful or partially successful release.
         Gets a list of all the releases for a specific release pipeline, loops
         through them and for each release looks for a matching environment and status.
 
         Arguments:
             name: (str) Name of the release pipeline.
-            from_env (str): Name of the environment you want the release to match.
-            target_env (str): Name of the environment that the release was run.
+            from_env (str): Name of the environment you want the target environment to match.
+            target_env (str): Name of the environment that you want the release to run on.
 
         Returns:
             The ID of the release and environment that was either succeeded or partially succeeded.
