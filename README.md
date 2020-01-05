@@ -66,7 +66,7 @@ victoria destroyer rebuild pent
 
 #### Copy an an environment
 
-Copy is defined as building an environment based off the state of the other environment.
+Copy is defined as building an environment based off the state of an other environment.
 
 ```
 python destroyer copy qa pent perf
