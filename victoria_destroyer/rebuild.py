@@ -78,7 +78,7 @@ class Rebuild:
             if not release.complete:
 
                 if not release.release_id:
-                    release.release_id, release.environment_id = self.client.get_latest_release(
+                    release.release_id, release.environment_id = self.client.get_latest_successful_release(
                         release.name, from_environment, target_environment)
 
                 if release.release_id and release.environment_id:
