@@ -40,14 +40,17 @@ Allows the creation and DESTRUCTION of SAAS environments.
 ### Help text
 
 ```
-Usage: cli.py rebuild [OPTIONS] [CFG]
+Usage: victoria destroyer [OPTIONS] COMMAND [ARGS]...
 
-  CLI call for rebuilding a specific kubernetes environment Arguments:
-  cfg (str): Path to the config file.     env (str): Environment to rebuild.
+  The Destroyer allows the destruction and rebuilding of environments via
+  CLI.
 
 Options:
-  --env TEXT  Environment you want to rebuild.  [required]
-  --help      Show this message and exit.
+  -h, --help  Show this message and exit.
+
+Commands:
+  copy     CLI call for rebuilding an environment based off another...
+  rebuild  CLI call for rebuilding a specific kubernetes environment...
 
 ```
 
