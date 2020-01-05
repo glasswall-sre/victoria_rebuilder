@@ -53,9 +53,23 @@ Options:
 
 ### Examples
 
+#### Rebuild an an environment
+
+Rebuild is defined as building up the environment not destroying.
+
 ```
-python destroyer/cli.py rebuild --env=pent
+victoria destroyer rebuild pent
 ```
+
+#### Copy an an environment
+
+Copy is defined as building an environment based off the state of the other environment.
+
+```
+python destroyer copy qa pent perf
+```
+
+Would copy the status of qa to pent and perf
 
 ## Development
 
@@ -68,4 +82,3 @@ python destroyer/cli.py rebuild --env=pent
 2. Run `pipenv sync`
 3. You're good to go. You can run commands using the package inside a
    `pipenv shell`, and modify the code with your IDE.
-   

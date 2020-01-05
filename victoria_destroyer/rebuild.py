@@ -6,6 +6,7 @@ Parameters:
     to_environment (str): The environment to rebuild.
     access_cfg (AccessConfig): The configuration to access AzureDevOps.
     deployments (DeploymentConfig): The configuration to process the deployments.
+    fresh (bool): If the destroyer should use the previous state file.
 
 """
 import time
@@ -24,14 +25,15 @@ STATE_FILE = "rebuild"
 
 class Rebuild:
     def __init__(self, from_environment: str, target_environment: str,
-                 access_cfg: AccessConfig, ***REMOVED*** DeploymentConfig):
+                 access_cfg: AccessConfig, ***REMOVED*** DeploymentConfig,
+                 fresh):
 
         self.deployments = deployments
         self.from_environment = from_environment
         self.target_environment = target_environment
         self.access_cfg = access_cfg
         self.deployments = deployments
-        self._load()
+        self._load(fresh)
         self.client = DevOpsClient(access_cfg)
 
     def run_deployments(self):
@@ -46,7 +48,8 @@ class Rebuild:
                 logging.info(f"Running deployment {deployment.stage}")
 
                 deployment.releases = self.run_releases(
-                    deployment.releases, self.environment)
+                    deployment.releases, self.from_environment,
+                    self.target_environment)
                 deployment.releases = self.wait_to_complete(
                     deployment.releases, 30)
                 deployment.complete = True
@@ -55,8 +58,8 @@ class Rebuild:
             logging.info(f"Deployment {deployment.stage} has completed.")
         self._clean_up()
 
-    def run_releases(self, releases: List[str],
-                     environment: str) -> List[ReleaseConfig]:
+    def run_releases(self, releases: List[str], from_environment: str,
+                     target_environment: str) -> List[ReleaseConfig]:
         """
         Runs a list of releases associated to a specific deployment and environment.
         If it can't find the release it assumes its not available for that environment
@@ -64,28 +67,31 @@ class Rebuild:
 
         Arguments:
             releases (List[str]): List of releases that need running.
-            environment (str): The environment to run the releases on.
-          
+            target_environment (str): The environment to run the release on.
+            from_environment (str): The environment you want to base the target environment on.
+
         Returns:
-            A list of Releases (ReleaseConfig). Releases that weren't found would of been removed. 
+            A list of Releases (ReleaseConfig). Releases that weren't found would of been removed.
         """
         for release in releases[:]:
+            print(release)
             if not release.complete:
 
                 if not release.release_id:
                     release.release_id, release.environment_id = self.client.get_latest_release(
-                        release.name, environment)
+                        release.name, from_environment, target_environment)
 
-                if release.release_id:
+                if release.release_id and release.environment_id:
                     self.client.run_release(release.release_id,
                                             release.environment_id)
 
                     logging.info(f"Running release {release.name}.")
                 else:
                     logging.info(
-                        f"Unable to find release for {release.name}. Assuming no environment for release."
+                        f"Unable to run release for {release.name}. Either no environment for release or it is currently running."
                     )
                     releases.remove(release)
+
             self._save()
 
         return releases
@@ -93,12 +99,12 @@ class Rebuild:
     def wait_to_complete(self, releases: List[ReleaseConfig],
                          interval: int) -> List[ReleaseConfig]:
         """
-        Waits for the releases to complete. 
+        Waits for the releases to complete.
 
         Arguments:
             releases (list[ReleaseConfig]): The list of releases to wait for.
             interval (int): In seconds how often to check if the release is complete.
-        
+
         Returns:
             A list of releases (ReleaseConfig)
             Once all the releases are complete it returns the list of releases.
@@ -108,10 +114,11 @@ class Rebuild:
         running = True
 
         while running:
-            time.sleep(interval)
 
             running = False
             for release in releases:
+                time.sleep(interval)
+
                 if not release.complete:
                     release.complete = self.client.is_release_complete(
                         release.release_id, release.environment_id,
@@ -124,17 +131,24 @@ class Rebuild:
 
         return releases
 
-    def _load(self):
+    def _load(self, fresh):
         """
         Loads the pickled file of the current object and de-serializes so it can resume
         if there's been a crash or an issue with the pipeline.
+
+        fresh (bool): If the destroyer should use the previous state file.
         """
-        if os.path.exists(STATE_FILE):
-            with open(STATE_FILE, 'rb') as rebuild_obj_file:
-                loaded_dict = pickle.load(rebuild_obj_file)
-                self.__dict__.update(loaded_dict)
+        if fresh:
+            self._clean_up()
+            logging.info(f"Fresh run so removed previous state file.")
         else:
-            logging.info(f"Unable to find rebuild file. Assuming fresh run. ")
+            if os.path.exists(STATE_FILE):
+                with open(STATE_FILE, 'rb') as rebuild_obj_file:
+                    loaded_dict = pickle.load(rebuild_obj_file)
+                    self.__dict__.update(loaded_dict)
+            else:
+                logging.info(
+                    f"Unable to find rebuild file. Assuming fresh run. ")
 
     def _save(self):
         """
@@ -153,4 +167,5 @@ class Rebuild:
         If the deployment has been successful then the state file
         is removed.
         """
-        os.remove(STATE_FILE)
+        if os.path.exists(STATE_FILE):
+            os.remove(STATE_FILE)
