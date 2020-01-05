@@ -18,60 +18,61 @@ from .rebuild import Rebuild
 @click.pass_obj
 def destroyer(cfg: DestroyerConfig):
     """
-    The Destroyer allows the destruction and rebuilding of environments via CLI. 
+    The Destroyer allows the destruction and rebuilding of environments via CLI.
     """
     pass
 
 
 @destroyer.command()
 @click.argument('from_env', nargs=1, type=str)
-@click.argument('to_env', nargs=-1, type=str)
+@click.argument('to_env', nargs=1, type=str)
+@click.option(
+    '-f',
+    '--fresh',
+    is_flag=True,
+    help="If you don't want the destroyer to use the previous state file.")
 @click.pass_obj
-def copy(cfg: DestroyerConfig, from_env: str, to_env: str) -> None:
+def copy(cfg: DestroyerConfig, from_env: str, to_env: str,
+         fresh: bool) -> None:
     """
-    CLI call for rebuilding a list of environments based off
-    a single environment
+    CLI call for rebuilding an environment based off another environment.
     Arguments:
         from_env (str): The environment to rebuild from in Azure DevOps.
-        to_env (List[str]): The list of environments to rebuild
+        to_env (str): The environment to rebui;d.
+        fresh (bool): If the destroyer should use the previous state file.
 
     """
     logging.info(
         f"Rebuilding environments {from_env} from environment: {to_env}")
 
-    for env in to_env:
-        logging.info(f"Rebuilding environment {env} ")
-        env_rebuild = Rebuild(
-            env,
-            cfg.access,
-            cfg.deployments,
-        )
+    logging.info(f"Rebuilding environment {to_env}.")
+    env_rebuild = Rebuild(from_env, to_env, cfg.access, cfg.deployments, fresh)
 
-        #  env_rebuild.run_deployments()
+    env_rebuild.run_deployments()
 
-        logging.info(f"Successfully built {env}")
-
-    logging.info(f"Fully rebuilt all environments: {to_env}")
+    logging.info(f"Finished running deployments to {to_env}.")
 
 
 @destroyer.command()
 @click.argument('env', nargs=1, type=str)
+@click.option(
+    '-f',
+    '--fresh',
+    is_flag=True,
+    help="If you don't want the destroyer to use the previous state file.")
 @click.pass_obj
-def rebuild(cfg: DestroyerConfig, env: str) -> None:
+def rebuild(cfg: DestroyerConfig, env: str, fresh: bool) -> None:
     """
     CLI call for rebuilding a specific kubernetes environment
     Arguments:
         cfg (str): The destroyer config.
-        env (str): Environment to rebuild.  
+        env (str): Environment to rebuild.
+        fresh (bool): If the destroyer should use the previous state file.
     """
 
-    logging.info(f"Rebuilding environment {env} ")
-    env_rebuild = Rebuild(
-        env,
-        cfg.access,
-        cfg.deployments,
-    )
+    logging.info(f"Rebuilding environment {env}.")
+    env_rebuild = Rebuild(env, env, cfg.access, cfg.deployments, fresh)
 
     env_rebuild.run_deployments()
 
-    logging.info(f"Successfully built {env}")
+    logging.info(f"Finished running deployments to {env}.")
