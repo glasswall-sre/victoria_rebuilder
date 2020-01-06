@@ -46,7 +46,8 @@ def copy(cfg: DestroyerConfig, from_env: str, to_env: str,
         f"Rebuilding environments {from_env} from environment: {to_env}")
 
     logging.info(f"Rebuilding environment {to_env}.")
-    env_rebuild = Rebuild(from_env, to_env, cfg.access, cfg.deployments, fresh)
+    env_rebuild = Rebuild(from_env.lower(), to_env.lower(), cfg.access,
+                          cfg.deployments, fresh)
 
     env_rebuild.run_deployments()
 
@@ -71,7 +72,8 @@ def rebuild(cfg: DestroyerConfig, env: str, fresh: bool) -> None:
     """
 
     logging.info(f"Rebuilding environment {env}.")
-    env_rebuild = Rebuild(env, env, cfg.access, cfg.deployments, fresh)
+    env_rebuild = Rebuild(env.lower(), env.lower(), cfg.access,
+                          cfg.deployments, fresh)
 
     env_rebuild.run_deployments()
 
