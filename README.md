@@ -40,22 +40,39 @@ deployments:
 ### Help text
 
 ```
-Usage: cli.py rebuild [OPTIONS] [CFG]
+Usage: victoria destroyer [OPTIONS] COMMAND [ARGS]...
 
-  CLI call for rebuilding a specific kubernetes environment Arguments:
-  cfg (str): Path to the config file.     env (str): Environment to rebuild.
+  The Destroyer allows the destruction and rebuilding of environments via
+  CLI.
 
 Options:
-  --env TEXT  Environment you want to rebuild.  [required]
-  --help      Show this message and exit.
+  -h, --help  Show this message and exit.
+
+Commands:
+  copy     CLI call for rebuilding an environment based off another...
+  rebuild  CLI call for rebuilding a specific kubernetes environment...
 
 ```
 
 ### Examples
 
+#### Rebuild an an environment
+
+Rebuild is defined as building up the environment not destroying.
+
 ```
-python destroyer/cli.py rebuild --env=pent
+victoria destroyer rebuild pent
 ```
+
+#### Copy an an environment
+
+Copy is defined as building an environment based off the state of an other environment.
+
+```
+python destroyer copy qa pent perf
+```
+
+Would copy the status of qa to pent and perf
 
 ## Development
 
@@ -68,4 +85,3 @@ python destroyer/cli.py rebuild --env=pent
 2. Run `pipenv sync`
 3. You're good to go. You can run commands using the package inside a
    `pipenv shell`, and modify the code with your IDE.
-   

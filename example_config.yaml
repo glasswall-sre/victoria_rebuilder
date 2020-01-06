@@ -1,20 +1,5 @@
-logging_config:
-  version: 1
-  formatters:
-    default:
-      format: "%(message)s"
-  handlers:
-    console:
-      class: logging.StreamHandler
-      level: DEBUG
-      formatter: default
-      stream: ext://sys.stdout
-  root:
-    level: DEBUG
-    handlers: [console]
-
 access:
-  access_token:
+  access_token: insert-token
   organisation: glasswall
   project: Glasswall Cloud
   email: apotter-dixon@glasswallsolutions.com

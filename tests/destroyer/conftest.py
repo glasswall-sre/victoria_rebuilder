@@ -29,6 +29,10 @@ class MockReleaseClient:
                 "name": "pent",
                 "status": "succeeded",
                 "id": 321
+            }, {
+                "name": "qa",
+                "status": "succeeded",
+                "id": 456
             }]
         }
 
@@ -109,8 +113,8 @@ def create_mock_rebuild(monkeypatch, mock_client):
         }]
     })
 
-    return Rebuild("pent", destroyer_config.access,
-                   destroyer_config.deployments)
+    return Rebuild("qa", "pent", destroyer_config.access,
+                   destroyer_config.deployments, False)
 
 
 @pytest.fixture
