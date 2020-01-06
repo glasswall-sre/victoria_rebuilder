@@ -74,7 +74,7 @@ class Rebuild:
             A list of Releases (ReleaseConfig). Releases that weren't found would of been removed.
         """
         for release in releases[:]:
-            print(release)
+
             if not release.complete:
 
                 if not release.release_id:
