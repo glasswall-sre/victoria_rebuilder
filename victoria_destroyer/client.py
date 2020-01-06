@@ -2,8 +2,8 @@
 A further wrapper on the AzureDevops Python API to abstract commmon interactions
 with Azure Devops such as checking if a release is complete.
 
-Parameters:    
-    access_cfg (AccessConfig): The configuration to access AzureDevOps.    
+Parameters:
+    access_cfg (AccessConfig): The configuration to access AzureDevOps.
 
 """
 
@@ -28,7 +28,7 @@ class DevOpsClient:
         """
         Checks to see if a release is complete for a specific environment.
 
-        Will exit with an exit code of 1 it the status is rejected or cancelled. 
+        Will exit with an exit code of 1 it the status is rejected or cancelled.
 
         Arguments:
             release_id (int): ID of the release in Azure DevOps.
@@ -37,7 +37,7 @@ class DevOpsClient:
 
         Returns:
             True if a release has succeeded or partiallySucceeded otherwise False.
-        
+
         """
         release_environment = self.release_client.get_release_environment(
             self.access_cfg.project,
@@ -52,17 +52,19 @@ class DevOpsClient:
 
         return release_environment.status == "succeeded" or release_environment.status == "partiallySucceeded"
 
-    def get_latest_release(
-            self, name: str,
-            env_name: str) -> Union[Tuple[None, None], Tuple[int, int]]:
+    def get_latest_successful_release(
+            self, name: str, from_env: str,
+            target_env: str) -> Union[Tuple[None, None], Tuple[int, int]]:
         """
-        Retrieves the latest release and environment id for a specific environment.
+        Gets the release and environment id for a target environment based off a base environments most
+        recent successful or partially successful release.
         Gets a list of all the releases for a specific release pipeline, loops
         through them and for each release looks for a matching environment and status.
 
         Arguments:
             name: (str) Name of the release pipeline.
-            env_name (str): Name of the environment that the release was run.
+            from_env (str): Name of the environment you want the target environment to match.
+            target_env (str): Name of the environment that you want the release to run on.
 
         Returns:
             The ID of the release and environment that was either succeeded or partially succeeded.
@@ -81,17 +83,43 @@ class DevOpsClient:
                 result = self.release_client.get_release(
                     self.access_cfg.project, release_id=release.id)
 
+                target_env_id = self._get_target_environment_id(
+                    result.environments, target_env)
+
                 for environment in result.environments:
 
-                    if environment.name == env_name and (
+                    if environment.name == from_env and (
                             environment.status == "succeeded"
                             or environment.status == "partiallySucceeded"):
                         logging.info(
                             f"Found environment for {name} with id: {environment.id} "
                         )
-                        return release.id, environment.id
+                        return release.id, target_env_id
 
         return None, None
+
+    def _get_target_environment_id(self, environments,
+                                   environment_name) -> Union[None, int]:
+        """
+        Internal function used to retrieve the environment id of the target
+        environment we want to run a release on.
+
+        Checks to see if InProgress in case the command is run several times by
+        mistake.
+
+        environments (List[ReleaseEnvironment]): List of environments to search through.
+        environment_name (str): The name of the environment to search for.
+
+        Returns:
+            The id of the environment if found. If not found then None is returned.
+        """
+
+        for environment in environments:
+
+            if environment.name == environment_name and "inProgress" not in environment.status:
+                return environment.id
+
+        return None
 
     def run_release(self, release_id: int, environment_id: int) -> None:
         """
