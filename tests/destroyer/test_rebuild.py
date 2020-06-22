@@ -1,6 +1,7 @@
 import pytest
 import os
 from munch import munchify
+from unittest.mock import patch
 
 
 def test_rebuild(mock_rebuild):
@@ -11,7 +12,20 @@ def test_creates_save_file(mock_rebuild):
     mock_rebuild._save()
     assert os.path.exists("rebuild")
 
+
+
+def test_runs_if_inprogress(mock_rebuild ):
+    release = {
+        "name": "Platform.Engine",
+        "complete": False,
+        "release_id": 1,
+        "environment_id": 432,
+    }
+    releases = [munchify(release)]
+    releases = mock_rebuild.run_releases(releases, "qa", "pent")
     
+    assert releases
+
 
 
 def test_wait_updates_release_complete(mock_rebuild):
