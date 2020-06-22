@@ -25,7 +25,7 @@ STATE_FILE = "rebuild"
 
 class Rebuild:
     def __init__(self, from_environment: str, target_environment: str,
-                 access_cfg: AccessConfig, ***REMOVED*** DeploymentConfig,
+                 access_cfg: AccessConfig, deployments: DeploymentConfig,
                  resume):
 
         self.deployments = deployments
@@ -42,7 +42,7 @@ class Rebuild:
         Once a deployment has been completed its state is saved and
         the next deployment is run.
         """
-        for deployment in self.***REMOVED***
+        for deployment in self.deployments:
 
             if not deployment.complete:
                 logging.info(f"Running deployment {deployment.stage}")
@@ -78,14 +78,14 @@ class Rebuild:
             if not release.complete:
 
                 if not release.release_id:
-                    release.release_id, release.environment_id = self.client.get_latest_successful_release(
+                    release.release_id, release.environment_id= self.client.get_latest_successful_release(
                         release.name, from_environment, target_environment)
 
                 if release.release_id and release.environment_id:
                     self.client.run_release(release.release_id,
-                                            release.environment_id)
+                                            release.environment_id, release.name)
 
-                    logging.info(f"Running release {release.name}.")
+                   
                 else:
                     logging.info(
                         f"Unable to run release for {release.name}. Either no environment for release or it is currently running."
