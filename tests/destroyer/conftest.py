@@ -44,6 +44,8 @@ class MockReleaseClient:
             release_environment = {"status": "rejected"}
         elif environment_id == 432:
             release_environment = {"status": "succeeded"}
+        elif environment_id == 1:
+            release_environment = {"status": "inProgress"}
 
         return munchify(release_environment)
 
