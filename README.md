@@ -12,11 +12,11 @@ Allows the creation and DESTRUCTION of SAAS environments.
 
 #### Access Configuration
 ```yaml
-- ***REMOVED***
+- access:
     access_token:
-  ***REMOVED***
-  ***REMOVED***
-  ***REMOVED***
+    organisation: glasswall
+    project: Glasswall Cloud
+    email: apotter-dixon@glasswallsolutions.com
 ```
 
 - `access_token`: The PAT token associated to the email and organisaiton.
@@ -26,13 +26,13 @@ Allows the creation and DESTRUCTION of SAAS environments.
 
 #### Deployment Configuration
 ```yaml
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
+deployments:
+  - stage: deploy_init_infrastructure
+    releases:
+      - name: Platform.Infrastructure
+  - stage: deploy_kubernetes_infrastructure
+    releases:
+      - name: Platform.Kubernetes
 ```
 - `stage`: Name of the stage. The releases in each stage are all run first before the next stage is complete
 - `releases`: List of releases and their name. The name is the name of the release in Azure DevOps

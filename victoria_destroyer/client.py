@@ -87,13 +87,16 @@ class DevOpsClient:
                     result.environments, target_env)
 
                 for environment in result.environments:
-
+                    
                     if environment.name == from_env and (
                             environment.status == "succeeded"
-                            or environment.status == "partiallySucceeded"):
+                            or environment.status == "partiallySucceeded"
+                            or environment.status == "queued"
+                            or environment.status == "inProgress" ):
                         logging.info(
                             f"Found environment for {name} with id: {environment.id} "
                         )
+                        
                         return release.id, target_env_id
 
         return None, None
@@ -121,7 +124,7 @@ class DevOpsClient:
 
         return None
 
-    def run_release(self, release_id: int, environment_id: int) -> None:
+    def run_release(self, release_id: int, environment_id: int, release_name: str) -> None:
         """
         Runs the latest succeeded or partically succeeded pipeline associated
         with the object.
@@ -129,18 +132,26 @@ class DevOpsClient:
         Arguments:
             release_id (int): Id of the release in Azure DevOps.
             environment_id (int): Id of the environment associated to a specific release.
+            release_name (str): Name of the release for better logging.
 
         """
+        release_environment = self.release_client.get_release_environment(
+            self.access_cfg.project,
+            release_id=release_id,
+            environment_id=environment_id)
 
-        start_values = {
-            "comment": "Run by the DESTROYER",
-            "status": "inProgress"
-        }
-
-        self.release_client.update_release_environment(start_values,
-                                                       self.access_cfg.project,
-                                                       release_id,
-                                                       environment_id)
+        if release_environment.status != "inProgress" and release_environment.status != "queued":
+            start_values = {
+                "comment": "Run by the DESTROYER",
+                "status": "inProgress"
+            }
+            self.release_client.update_release_environment(start_values,
+                                                            self.access_cfg.project,
+                                                            release_id,
+                                                            environment_id)
+            logging.info(f"Running release {release_id} for {release_name}.")
+        else:
+            logging.info(f"Release {release_id} for {release_name} is currently {release_environment.status} so not starting for this run.")
 
     def _connect(self):
         """
