@@ -27,19 +27,19 @@ def destroyer(cfg: DestroyerConfig):
 @click.argument('from_env', nargs=1, type=str)
 @click.argument('to_env', nargs=1, type=str)
 @click.option(
-    '-f',
-    '--fresh',
+    '-r',
+    '--resume',
     is_flag=True,
-    help="If you don't want the destroyer to use the previous state file.")
+    help="If you want the destroyer to use the previous state file.")
 @click.pass_obj
 def copy(cfg: DestroyerConfig, from_env: str, to_env: str,
-         fresh: bool) -> None:
+         resume: bool) -> None:
     """
     CLI call for rebuilding an environment based off another environment.
     Arguments:
         from_env (str): The environment to rebuild from in Azure DevOps.
-        to_env (str): The environment to rebui;d.
-        fresh (bool): If the destroyer should use the previous state file.
+        to_env (str): The environment to rebuild.
+        resume (bool): If the destroyer should resume using previous state file.
 
     """
     logging.info(
@@ -47,7 +47,7 @@ def copy(cfg: DestroyerConfig, from_env: str, to_env: str,
 
     logging.info(f"Rebuilding environment {to_env}.")
     env_rebuild = Rebuild(from_env.lower(), to_env.lower(), cfg.access,
-                          cfg.deployments, fresh)
+                          cfg.deployments, resume)
 
     env_rebuild.run_deployments()
 
