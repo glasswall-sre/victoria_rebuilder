@@ -11,6 +11,8 @@ def test_creates_save_file(mock_rebuild):
     mock_rebuild._save()
     assert os.path.exists("rebuild")
 
+    
+
 
 def test_wait_updates_release_complete(mock_rebuild):
     release = {
