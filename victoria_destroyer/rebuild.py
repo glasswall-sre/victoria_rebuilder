@@ -26,14 +26,14 @@ STATE_FILE = "rebuild"
 class Rebuild:
     def __init__(self, from_environment: str, target_environment: str,
                  access_cfg: AccessConfig, deployments: DeploymentConfig,
-                 fresh):
+                 resume):
 
         self.deployments = deployments
         self.from_environment = from_environment
         self.target_environment = target_environment
         self.access_cfg = access_cfg
         self.deployments = deployments
-        self._load(fresh)
+        self._load(resume)
         self.client = DevOpsClient(access_cfg)
 
     def run_deployments(self):
@@ -131,17 +131,14 @@ class Rebuild:
 
         return releases
 
-    def _load(self, fresh):
+    def _load(self, resume):
         """
         Loads the pickled file of the current object and de-serializes so it can resume
         if there's been a crash or an issue with the pipeline.
 
-        fresh (bool): If the destroyer should use the previous state file.
+        resume (bool): If the destroyer should use the previous state file.
         """
-        if fresh:
-            self._clean_up()
-            logging.info(f"Fresh run so have removed the previous state file.")
-        else:
+        if resume:          
             if os.path.exists(STATE_FILE):
                 with open(STATE_FILE, 'rb') as rebuild_obj_file:
                     loaded_dict = pickle.load(rebuild_obj_file)
@@ -149,6 +146,10 @@ class Rebuild:
             else:
                 logging.info(
                     f"Unable to find rebuild file. Assuming fresh run. ")
+        else:
+            self._clean_up()
+            logging.info(f"Fresh run so have removed the previous state file.")
+           
 
     def _save(self):
         """
