@@ -1,0 +1,58 @@
+access:
+  access_token: insert-token
+  organisation: glasswall
+  project: Glasswall Cloud
+  email: apotter-dixon@glasswallsolutions.com
+
+deployments:
+  - stage: deploy_init_infrastructure
+    releases:
+      - name: Platform.Infrastructure
+  - stage: deploy_kubernetes_infrastructure
+    releases:
+      - name: Platform.Kubernetes
+  - stage: deploy_main_infrastructure
+    releases:
+      - name: Platform.Kubernetes.Certificates
+      - name: Platform.Kubernetes.Redis
+      - name: Platform.Logging
+      - name: Platform.Postfix
+      - name: Platform.Prometheus
+      - name: FileTrust.Common
+  - stage: deploy_init_services
+    releases:
+      - name: Glasswall.IdentityServer4
+      - name: FileTrust.TenancyManagement.Api
+      - name: Glasswall.Platform.UserManagement.Api
+      - name: FileTrust.Api
+      - name: FileTrust.TransactionReporter.Api.Sql
+      - name: FileTrust.TransactionReporter.Api
+      - name: Platform.Prometheus.Exporters
+      - name: FileTrust.SmtpReceiver.Recovery
+  - stage: deploy_main_services
+    releases:
+      - name: FileTrust.Common.TenantProvision
+      - name: FileTrust.TenantCreation
+      - name: Glasswall.Common.Testing.SmtpSimulator
+      - name: FileTrust.FileRouter
+      - name: FileTrust.FileProtect
+      - name: FileTrust.DataRetention
+      - name: FileTrust.DataRetentionPolicy
+      - name: FileTrust.FileReleaseRequest.Api
+      - name: FileTrust.StorageAccessService.Api
+      - name: Filetrust.Blackhole
+      - name: FileTrust.FileRouter
+      - name: FileTrust.GlasswallEngine.Api
+      - name: FileTrust.GWE.FileTypeDetection.Api
+      - name: FileTrust.HeldFileRelease
+      - name: FileTrust.HeldFileRouter
+      - name: FileTrust.HeldReport
+      - name: FileTrust.MessageInspection
+      - name: FileTrust.MessageRegeneration
+      - name: FileTrust.Notification
+      - name: FileTrust.Portal
+      - name: FileTrust.SmtpReceiver
+      - name: FileTrust.SmtpTransmitter
+      - name: FileTrust.ThreatCensor
+      - name: FileTrust.TransactionChecker
+      - name: FileTrust.TransactionReporter

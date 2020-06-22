@@ -133,8 +133,8 @@ class DestroyerConfig:
     """
     def __init__(
             self,
-            ***REMOVED*** AccessConfig,
-            ***REMOVED*** List[DeploymentConfig],
+            access: AccessConfig,
+            deployments: List[DeploymentConfig],
     ) -> None:
 
         self.access = access

@@ -57,12 +57,12 @@ def copy(cfg: DestroyerConfig, from_env: str, to_env: str,
 @destroyer.command()
 @click.argument('env', nargs=1, type=str)
 @click.option(
-    '-f',
-    '--fresh',
+    '-r',
+    '--resume',
     is_flag=True,
     help="If you don't want the destroyer to use the previous state file.")
 @click.pass_obj
-def rebuild(cfg: DestroyerConfig, env: str, fresh: bool) -> None:
+def rebuild(cfg: DestroyerConfig, env: str, resume: bool) -> None:
     """
     CLI call for rebuilding a specific kubernetes environment
     Arguments:
@@ -73,7 +73,7 @@ def rebuild(cfg: DestroyerConfig, env: str, fresh: bool) -> None:
 
     logging.info(f"Rebuilding environment {env}.")
     env_rebuild = Rebuild(env.lower(), env.lower(), cfg.access,
-                          cfg.deployments, fresh)
+                          cfg.deployments, resume)
 
     env_rebuild.run_deployments()
 
