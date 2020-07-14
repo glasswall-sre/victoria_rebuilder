@@ -1,6 +1,6 @@
-# destroyer
+# Victoria Rebuilder
 
-Allows the creation and DESTRUCTION of SAAS environments.
+Allows the user to run a configured set of Azure DevOps release pipelines.
 
 ## Usage
 
@@ -14,9 +14,9 @@ Allows the creation and DESTRUCTION of SAAS environments.
 ```yaml
 - access:
     access_token:
-    organisation: glasswall
-    project: Glasswall Cloud
-    email: apotter-dixon@glasswallsolutions.com
+    organisation: Organisation
+    project: Azure DevOps Project
+    email: user@organisation.com
 ```
 
 - `access_token`: The PAT token associated to the email and organisaiton.
