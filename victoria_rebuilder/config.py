@@ -1,6 +1,6 @@
 """config.py
 
-Config defines the config for the Destroyer and a marshmallow schema for
+Config defines the config for the Rebuilder and a marshmallow schema for
 validating the config.
 
 Author:
@@ -112,8 +112,8 @@ class DeploymentConfig:
         return False
 
 
-class DestroyerSchema(Schema):
-    """Marshmallow schema for destroyer."""
+class RebuilderSchema(Schema):
+    """Marshmallow schema for rebuilder."""
     access = fields.Nested(AccessSchema)
     deployments = fields.List(fields.Nested(DeploymentSchema))
     environments = fields.List(fields.Str)
@@ -122,10 +122,10 @@ class DestroyerSchema(Schema):
     def make_destoyer_config(self, data, **kwargs):
         """Callback used by marshmallow after loading object. We're using it here
         to create an instance of Config after loading the data."""
-        return DestroyerConfig(**data)
+        return RebuilderConfig(**data)
 
 
-class DestroyerConfig:
+class RebuilderConfig:
     """DeploymentConfig is the config for deployments.
 
     Attributes:
@@ -147,5 +147,5 @@ class DestroyerConfig:
         return False
 
 
-CONFIG_SCHEMA = DestroyerSchema(unknown=EXCLUDE)
+CONFIG_SCHEMA = RebuilderSchema(unknown=EXCLUDE)
 """Instance of ConfigSchema to use for validation."""

@@ -1,10 +1,10 @@
 import pytest
 
-import victoria_destroyer
+import victoria_rebuilder
 from types import SimpleNamespace
-from victoria_destroyer import client
-from victoria_destroyer import config
-from victoria_destroyer.rebuild import Rebuild
+from victoria_rebuilder import client
+from victoria_rebuilder import config
+from victoria_rebuilder.rebuild import Rebuild
 from munch import munchify
 
 
@@ -77,9 +77,9 @@ class MockConfig:
 
 
 def create_mock_client(monkeypatch):
-    monkeypatch.setattr(victoria_destroyer.client, "Connection",
+    monkeypatch.setattr(victoria_rebuilder.client, "Connection",
                         MockConnection)
-    monkeypatch.setattr(victoria_destroyer.client, "BasicAuthentication",
+    monkeypatch.setattr(victoria_rebuilder.client, "BasicAuthentication",
                         MockBasicAuthentication)
 
     return client.DevOpsClient(MockConfig())
@@ -92,12 +92,12 @@ def mock_client(monkeypatch):
 
 def create_mock_rebuild(monkeypatch, mock_client):
 
-    monkeypatch.setattr(victoria_destroyer.client, "Connection",
+    monkeypatch.setattr(victoria_rebuilder.client, "Connection",
                         MockConnection)
-    monkeypatch.setattr(victoria_destroyer.client, "BasicAuthentication",
+    monkeypatch.setattr(victoria_rebuilder.client, "BasicAuthentication",
                         MockBasicAuthentication)
 
-    destroyer_config = config.DestroyerSchema().load({
+    rebuilder_config = config.RebuilderSchema().load({
         "access": {
             "access_token": "12344",
             "organisation": "glasswall",
@@ -115,8 +115,8 @@ def create_mock_rebuild(monkeypatch, mock_client):
         }]
     })
 
-    return Rebuild("qa", "pent", destroyer_config.access,
-                   destroyer_config.deployments, False)
+    return Rebuild("qa", "pent", rebuilder_config.access,
+                   rebuilder_config.deployments, False)
 
 
 @pytest.fixture

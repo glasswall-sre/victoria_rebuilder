@@ -1,6 +1,6 @@
 import pytest
 
-from victoria_destroyer.config import DestroyerConfig, DestroyerSchema, ReleaseConfig, AccessConfig, AccessSchema, DeploymentConfig, DeploymentSchema
+from victoria_rebuilder.config import RebuilderConfig, RebuilderSchema, ReleaseConfig, AccessConfig, AccessSchema, DeploymentConfig, DeploymentSchema
 
 
 def test_create_deployment_config():
@@ -37,7 +37,7 @@ def test_create_access_config():
 
 def test_create_destroy_config():
 
-    result = DestroyerSchema().load({
+    result = RebuilderSchema().load({
         "access": {
             "access_token": "12344",
             "organisation": "glasswall",
@@ -55,7 +55,7 @@ def test_create_destroy_config():
         }]
     })
 
-    assert result == DestroyerConfig(
+    assert result == RebuilderConfig(
         AccessConfig("12344", "glasswall", "Test_project",
                      "testemail@email.com"),
         [

@@ -6,7 +6,7 @@ Parameters:
     to_environment (str): The environment to rebuild.
     access_cfg (AccessConfig): The configuration to access AzureDevOps.
     deployments (DeploymentConfig): The configuration to process the deployments.
-    fresh (bool): If the destroyer should use the previous state file.
+    fresh (bool): If the rebuilder should use the previous state file.
 
 """
 import time
@@ -16,8 +16,8 @@ import pickle
 import os
 from typing import List, Union
 
-from victoria_destroyer.config import AccessConfig, DeploymentConfig, ReleaseConfig
-from victoria_destroyer.client import DevOpsClient
+from victoria_rebuilder.config import AccessConfig, DeploymentConfig, ReleaseConfig
+from victoria_rebuilder.client import DevOpsClient
 
 # The location of the state file.
 STATE_FILE = "rebuild"
@@ -136,7 +136,7 @@ class Rebuild:
         Loads the pickled file of the current object and de-serializes so it can resume
         if there's been a crash or an issue with the pipeline.
 
-        resume (bool): If the destroyer should use the previous state file.
+        resume (bool): If the rebuilder should use the previous state file.
         """
         if resume:          
             if os.path.exists(STATE_FILE):

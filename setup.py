@@ -19,7 +19,7 @@ setup(
         "click", "marshmallow", "pyyaml", "requests", "azure-devops",
         "victoria"
     ],
-    name="victoria_destroyer",
+    name="victoria_rebuilder",
     version="#{TAG_NAME}#",
     description=
     "Victoria Plugin that allows the creation and DESTRUCTION of SAAS on the cloud.",
