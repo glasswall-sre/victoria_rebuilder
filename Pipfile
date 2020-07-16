@@ -18,6 +18,7 @@ wheel = "*"
 twine = "*"
 pipenv-setup = "*"
 pytest-azurepipelines = "*"
+bandit = "*"
 
 [packages]
 click = "*"
