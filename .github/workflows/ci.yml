@@ -31,7 +31,7 @@ jobs:
           pipenv run pytest tests/ --cov victoria_rebuilder --cov-report term-missing
       - name: Check for security issues with bandit
         run: |
-          pipenv run bandit -r victoria_rebuilder
+          pipenv run bandit -r victoria_rebuilder --skip B301
 
       - name: Codecov
         uses: codecov/codecov-action@v1.0.7

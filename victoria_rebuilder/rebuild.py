@@ -78,14 +78,13 @@ class Rebuild:
             if not release.complete:
 
                 if not release.release_id:
-                    release.release_id, release.environment_id= self.client.get_latest_successful_release(
+                    release.release_id, release.environment_id = self.client.get_latest_successful_release(
                         release.name, from_environment, target_environment)
 
                 if release.release_id and release.environment_id:
                     self.client.run_release(release.release_id,
                                             release.environment_id, release.name)
 
-                   
                 else:
                     logging.info(
                         f"Unable to run release for {release.name}. Either no environment for release or it is currently running."
@@ -138,9 +137,10 @@ class Rebuild:
 
         resume (bool): If the rebuilder should use the previous state file.
         """
-        if resume:          
+        if resume:
             if os.path.exists(STATE_FILE):
                 with open(STATE_FILE, 'rb') as rebuild_obj_file:
+                    # nosec
                     loaded_dict = pickle.load(rebuild_obj_file)
                     self.__dict__.update(loaded_dict)
             else:
@@ -149,7 +149,6 @@ class Rebuild:
         else:
             self._clean_up()
             logging.info(f"Fresh run so have removed the previous state file.")
-           
 
     def _save(self):
         """

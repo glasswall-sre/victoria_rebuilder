@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5cfd16b54fc06b50214a54a9e2af9d927bee77b823db696e0186b7fbc60f8a5e"
+            "sha256": "8518cbd48610569707bb4492740b17c0362351687c8d147b114ae0c1b266994d"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -11,11 +11,6 @@
             {
                 "name": "pypi",
                 "url": "https://pypi.org/simple",
-                "verify_ssl": true
-            },
-            {
-                "name": "sre",
-                "url": "$SRE_PACKAGE_FEED",
                 "verify_ssl": true
             }
         ]
@@ -51,10 +46,10 @@
         },
         "azure-cli-core": {
             "hashes": [
-                "sha256:248f87eed315e7932bc9efc64f0fa94dc02775560c09ae2f72ab70fe263f597f",
-                "sha256:520bed2bc2afb015c1bd6b85605536383363fdfdb858162acf04acfea8d28b1e"
+                "sha256:28bad5b4a8d90e98af4b556cbe560517a9be7187b0ea05bebe449c6838a03756",
+                "sha256:8618a30f7ea2188506f29801220c06396d731c26e4de92c327e6b0e8cc790db5"
             ],
-            "version": "==2.9.0"
+            "version": "==2.9.1"
         },
         "azure-cli-nspkg": {
             "hashes": [
@@ -389,10 +384,10 @@
         },
         "portalocker": {
             "hashes": [
-                "sha256:091364838ed6fbb68ea291c28982d1e56125c0d9e3fad5a4ac001db54dd862dc",
-                "sha256:874d6063c6ceb185fe4771da41b01872d2c56d292db746698f8ad7bf1833c905"
+                "sha256:34cb36c618d88bcd9079beb36dcdc1848a3e3d92ac4eac59055bdeafc39f9d4a",
+                "sha256:6d6f5de5a3e68c4dd65a98ec1babb26d28ccc5e770e07b672d65d5a35e4b2d8a"
             ],
-            "version": "==1.7.0"
+            "version": "==1.7.1"
         },
         "pycparser": {
             "hashes": [
@@ -542,15 +537,11 @@
         },
         "victoria": {
             "hashes": [
-                "sha256:2b101e0fe9477b073230de28e96ed23e3d5dae0edf43f78d02995ef46cd02352",
-                "sha256:6d89870668501cfabf07534b5b4bbcfd857b8769551fa71082ab5648fc15b7a6"
+                "sha256:0ebaf71ad7452d3fc690b40182a648b5b095234a8061f275803ed823ca96785d",
+                "sha256:89f3de6f3781f3bc2eb0dd3fe653dcb65e2ce86d2262507b860b92502f24f6f5"
             ],
-            "index": "sre",
-            "version": "==0.6.0"
-        },
-        "victoria-rebuilder": {
-            "editable": true,
-            "path": "."
+            "index": "pypi",
+            "version": "==0.6.1"
         },
         "zipp": {
             "hashes": [
@@ -1082,11 +1073,11 @@
         },
         "tqdm": {
             "hashes": [
-                "sha256:63ef7a6d3eb39f80d6b36e4867566b3d8e5f1fe3d6cb50c5e9ede2b3198ba7b7",
-                "sha256:7810e627bcf9d983a99d9ff8a0c09674400fd2927eddabeadf153c14a2ec8656"
+                "sha256:6baa75a88582b1db6d34ce4690da5501d2a1cb65c34664840a456b2c9f794d29",
+                "sha256:fcb7cb5b729b60a27f300b15c1ffd4744f080fb483b88f31dc8654b082cc8ea5"
             ],
             "markers": "python_version >= '2.6' and python_version not in '3.0, 3.1, 3.2, 3.3'",
-            "version": "==4.47.0"
+            "version": "==4.48.0"
         },
         "twine": {
             "hashes": [
