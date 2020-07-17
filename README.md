@@ -136,7 +136,7 @@ We accept pull requests! To contribute:
 
    We use [pylint](https://pypi.org/project/pylint/) to lint our code.
    We run pylint without the 'convention' and 'refactor' message classes.
-   You can lint your code with: `pipenv run pylint victoria --disable="C,R"` .
+   You can lint your code with: `pipenv run pylint victoria_destroyer --disable="C,R"` .
    We use [yapf](https://github.com/google/yapf) to automatically format our code. We recommend having it
    format the code whenever you save.
 
