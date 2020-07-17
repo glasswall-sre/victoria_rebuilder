@@ -4,7 +4,6 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 
-
 [dev-packages]
 pylint = "*"
 yapf = "*"
@@ -22,6 +21,7 @@ click = "*"
 marshmallow = "*"
 pyyaml = "*"
 azure-devops = "==5.1.0b6"
+victoria_rebuilder = {editable = true,path = "."}
 munch = "*"
 victoria = "*"
 
