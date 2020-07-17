@@ -2,7 +2,7 @@
 
 # Victoria Rebuilder
 
-Victoria Rebuilder is a V. I. C. T. O. R. I. is a plugin that allows you to run multiple Azure DevOps release pipelines 
+Victoria Rebuilder is a V. I. C. T. O. R. I. A is a plugin that allows you to run multiple Azure DevOps release pipelines 
 
 <img align="center" src="https://sonarcloud.io/api/project_badges/measure?project=victoria_rebuilder&metric=alert_status">
 <img align="center" src="https://sonarcloud.io/api/project_badges/measure?project=victoria_rebuilder&metric=sqale_rating">
