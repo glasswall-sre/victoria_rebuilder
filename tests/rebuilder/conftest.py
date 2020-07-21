@@ -29,6 +29,10 @@ class MockReleaseClient:
                 "name": "pent",
                 "status": "succeeded",
                 "id": 321
+            },{
+                "name": "stage",
+                "status": "rejected",
+                "id": 322
             }, {
                 "name": "qa",
                 "status": "succeeded",

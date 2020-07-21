@@ -14,6 +14,7 @@ import logging
 import copy
 import pickle
 import os
+import sys
 from typing import List, Union
 
 from victoria_rebuilder.config import AccessConfig, DeploymentConfig, ReleaseConfig
@@ -51,7 +52,7 @@ class Rebuild:
                     deployment.releases, self.from_environment,
                     self.target_environment)
                 deployment.releases = self.wait_to_complete(
-                    deployment.releases, 30)
+                    deployment.releases, 10)
                 deployment.complete = True
                 self._save()
 
@@ -119,18 +120,83 @@ class Rebuild:
                 time.sleep(interval)
 
                 if not release.complete:
-                    release.complete = self.client.is_release_complete(
+                    release_status = self.client.get_release_status(
                         release.release_id, release.environment_id,
                         release.name)
-                    if release.complete:
+                    if release_status == "succeeded" or release_status == "partiallySucceeded":
                         logging.info(f"{release.name} is complete.")
+                        release.complete = True
                         self._save()
-                    if not release.complete:
-                        running = True
+                    elif release_status == "rejected" or release_status == "cancelled":
+                        re_run_release = self._re_run_failed_release(release.release_id, release.environment_id, release.name)       
+                        release.complete = False if re_run_release else True                   
+                    else:
+                        running = True                   
 
         return releases
 
-    def _load(self, resume):
+    def _re_run_failed_release(self, release_id: int, release_env_id: int, release_name: str)-> bool:
+        """
+        Asks the user if they want to re run a failed release.
+
+        Arguments:
+            release_id (int): The release pipeline ID in Azure DevOpS.
+            release_env_id (int): The particular stage ID in Azure DevOps.
+            release_name (str): The name of the release pipeline.
+
+        Returns:
+            If the user decided to run the pipeline again.
+        """
+        logging.info(f"{release_name} has not been successful.")
+
+        run_again = self._query_yes_no(f"Would you like to run {release_name} again?")
+
+        if run_again:
+            self.client.run_release(release_id, release_env_id, release_name)
+        else:
+            logging.info(f"{release_name} will not be run again. Continuing with the deployment.")
+        
+        return run_again
+
+        
+    
+    def _query_yes_no(self, question: str, default="yes") -> bool:
+        """
+        Ask a yes/no question via input() and return their answer.
+
+        Arguments:
+            question (str): A string that is presented to the user.
+            default (str): The presumed answer if the user just hits <Enter>.
+            It must be "yes" (the default), "no" or None (meaning
+            an answer is required of the user).
+
+        Returns:
+            The "answer" return value is True for "yes" or False for "no".
+        """
+        valid = {"yes": True, "y": True, "ye": True,
+                "no": False, "n": False}
+        if default is None:
+            prompt = " [y/n] "
+        elif default == "yes":
+            prompt = " [Y/n] "
+        elif default == "no":
+            prompt = " [y/N] "
+        else:
+            raise ValueError("invalid default answer: '%s'" % default)
+
+        while True:
+            sys.stdout.write(question + prompt)
+            choice = input().lower()
+            if default is not None and choice == '':
+                return valid[default]
+            elif choice in valid:
+                return valid[choice]
+            else:
+                sys.stdout.write("Please respond with 'yes' or 'no' "
+                                "(or 'y' or 'n').\n")
+        
+
+    def _load(self, resume:bool) -> None:
         """
         Loads the pickled file of the current object and de-serializes so it can resume
         if there's been a crash or an issue with the pipeline.
@@ -150,7 +216,7 @@ class Rebuild:
             self._clean_up()
             logging.info(f"Fresh run so have removed the previous state file.")
 
-    def _save(self):
+    def _save(self)-> None:
         """
         Creates a deep copy of the current state of the object, removes the client
         connection so it can be pickled, pickles self and saves it to a file.
@@ -162,7 +228,7 @@ class Rebuild:
 
             pickle.dump(current_state, rebuild_obj_file)
 
-    def _clean_up(self):
+    def _clean_up(self) -> None:
         """
         If the deployment has been successful then the state file
         is removed.

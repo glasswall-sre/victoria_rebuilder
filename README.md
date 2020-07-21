@@ -46,7 +46,7 @@ access:
   email: user@organisation.com
 ```
 
-* `access_token` : The PAT token associated to the email and organisaiton.
+* `access_token` : The PAT token associated to the email and organisaiton. The PAT Token must have Read and Write access to Releases.
 * `organisation` : The organisation in Azure DevOps.
 * `project` : The project in Azure DevOps
 * `email` : The email account associated to the PAT token.

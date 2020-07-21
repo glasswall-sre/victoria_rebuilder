@@ -19,12 +19,8 @@ def test_get_latest_successful_release_pent_qa(mock_client):
     assert result == (123, 456)
 
 
-def test_release_complete_exit(mock_client):
+def test_get_release_rejected_status(mock_client):
 
-    try:
-        mock_client.is_release_complete("Test_Project", 321, 123)
-        assert (False)
-    except SystemExit:
-        pass
-
-    assert (True)
+    release_status =  mock_client.get_release_status("Test_Project", 321, 123)
+    assert release_status == "rejected" 
+   

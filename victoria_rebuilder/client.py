@@ -23,12 +23,10 @@ class DevOpsClient:
         self.access_cfg = access_cfg
         self._connect()
 
-    def is_release_complete(self, release_id: str, environment_id: int,
+    def get_release_status(self, release_id: str, environment_id: int,
                             name: str) -> bool:
         """
-        Checks to see if a release is complete for a specific environment.
-
-        Will exit with an exit code of 1 it the status is rejected or cancelled.
+        Retrieves the current release status of a particular release and environment.
 
         Arguments:
             release_id (int): ID of the release in Azure DevOps.
@@ -36,21 +34,28 @@ class DevOpsClient:
             name (str): Name of the release.
 
         Returns:
-            True if a release has succeeded or partiallySucceeded otherwise False.
+            Any of the following results from the Azure DevOps Python SDK:
+
+            canceled: Environment is in canceled state.
+            inProgress: Environment is in progress state.
+            notStarted: Environment is in not started state.
+            partiallySucceeded: Environment is in partially succeeded state.
+            queued: Environment is in queued state.
+            rejected: Environment is in rejected state.
+            scheduled: Environment is in scheduled state.
+            succeeded: Environment is in succeeded state.
+            undefined:Environment status not set.
 
         """
+        print(self.access_cfg.project)
+        print(release_id)
+        print(environment_id)
         release_environment = self.release_client.get_release_environment(
             self.access_cfg.project,
             release_id=release_id,
             environment_id=environment_id)
 
-        if release_environment.status == "rejected" or release_environment.status == "cancelled":
-            logging.critical(
-                f"Release {name} has failed to deploy. The status is {release_environment.status}"
-            )
-            sys.exit(1)
-
-        return release_environment.status == "succeeded" or release_environment.status == "partiallySucceeded"
+        return release_environment.status
 
     def get_latest_successful_release(
             self, name: str, from_env: str,
@@ -142,7 +147,7 @@ class DevOpsClient:
 
         if release_environment.status != "inProgress" and release_environment.status != "queued":
             start_values = {
-                "comment": "Run by the DESTROYER",
+                "comment": "Run by Victoria Rebuilder",
                 "status": "inProgress"
             }
             self.release_client.update_release_environment(start_values,
