@@ -60,7 +60,7 @@ def copy(cfg: RebuilderConfig, from_env: str, to_env: str,
     '-r',
     '--resume',
     is_flag=True,
-    help="If you don't want the rebuilder to use the previous state file.")
+    help="If you want the rebuilder to use the previous state file.")
 @click.pass_obj
 def rebuild(cfg: RebuilderConfig, env: str, resume: bool) -> None:
     """
