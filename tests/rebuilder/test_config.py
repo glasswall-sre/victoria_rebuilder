@@ -1,10 +1,10 @@
-import pytest
+from victoria.encryption.schemas import EncryptionEnvelope
 
-from victoria_rebuilder.config import RebuilderConfig, RebuilderSchema, ReleaseConfig, AccessConfig, AccessSchema, DeploymentConfig, DeploymentSchema
+from victoria_rebuilder.config import RebuilderConfig, RebuilderSchema, ReleaseConfig, AccessSchema, \
+    DeploymentConfig, DeploymentSchema, EncryptedAccessConfig
 
 
 def test_create_deployment_config():
-
     result_schema = DeploymentSchema().load({
         "releases": [{
             "name": "Platform.test"
@@ -12,7 +12,7 @@ def test_create_deployment_config():
             "name": "Platform.test2"
         }],
         "stage":
-        "test"
+            "test"
     })
 
     result_object = DeploymentConfig(
@@ -22,31 +22,21 @@ def test_create_deployment_config():
     assert result_schema == result_object
 
 
-def test_create_access_config():
+def test_create_access_config(mock_access_data):
+    result = AccessSchema().load(mock_access_data)
 
-    result = AccessSchema().load({
-        "access_token": "12344",
-        "organisation": "glasswall",
-        "project": "Test_project",
-        "email": "testemail@email.com"
-    })
-
-    assert result == AccessConfig("12344", "glasswall", "Test_project",
-                                  "testemail@email.com")
+    assert result == EncryptedAccessConfig(access_token=EncryptionEnvelope(**mock_access_data["access_token"]),
+                                           organisation=EncryptionEnvelope(**mock_access_data["organisation"]),
+                                           project=EncryptionEnvelope(**mock_access_data["project"]),
+                                           email=EncryptionEnvelope(**mock_access_data["email"]))
 
 
-def test_create_destroy_config():
-
+def test_create_destroy_config(mock_access_data):
     result = RebuilderSchema().load({
-        "access": {
-            "access_token": "12344",
-            "organisation": "glasswall",
-            "project": "Test_project",
-            "email": "testemail@email.com"
-        },
+        "access": mock_access_data,
         "deployments": [{
             "stage":
-            "test",
+                "test",
             "releases": [{
                 "name": "Platform.test"
             }, {
@@ -56,8 +46,10 @@ def test_create_destroy_config():
     })
 
     assert result == RebuilderConfig(
-        AccessConfig("12344", "glasswall", "Test_project",
-                     "testemail@email.com"),
+        EncryptedAccessConfig(access_token=EncryptionEnvelope(**mock_access_data["access_token"]),
+                              organisation=EncryptionEnvelope(**mock_access_data["organisation"]),
+                              project=EncryptionEnvelope(**mock_access_data["project"]),
+                              email=EncryptionEnvelope(**mock_access_data["email"])),
         [
             DeploymentConfig([
                 ReleaseConfig("Platform.test"),

@@ -6,24 +6,53 @@ validating the config.
 Author:
     Alex Potter-Dixon <apotter-dixon@glasswallsolutions.com>
 """
-import logging.config
-from os.path import basename
-from typing import Dict, List
+from typing import List
 
-import yaml
-from marshmallow import EXCLUDE, Schema, ValidationError, fields, post_load
+from marshmallow import EXCLUDE, Schema, fields, post_load
+from victoria.encryption.schemas import EncryptionEnvelopeSchema, EncryptionEnvelope
+
+
+def compare_encryption_envelopes(e1: EncryptionEnvelope, e2: EncryptionEnvelope) -> bool:
+    return e1.data == e2.data and e1.iv == e2.iv and e1.key == e2.key and e1.version == e2.version
 
 
 class AccessSchema(Schema):
     """Marshmallow schema for the Accessing AzureDevops plugin config."""
-    access_token = fields.Str()
-    organisation = fields.Str()
-    project = fields.Str()
-    email = fields.Email()
+
+    access_token = fields.Nested(EncryptionEnvelopeSchema, required=True, allow_none=False)
+    organisation = fields.Nested(EncryptionEnvelopeSchema, required=True, allow_none=False)
+    project = fields.Nested(EncryptionEnvelopeSchema, required=True, allow_none=False)
+    email = fields.Nested(EncryptionEnvelopeSchema, required=True, allow_none=False)
 
     @post_load
     def create_access_config(self, data, **kwargs):
-        return AccessConfig(**data)
+        return EncryptedAccessConfig(**data)
+
+
+class EncryptedAccessConfig:
+    """AccessConfig is the config for accessing Azure Devops.
+
+    Attributes:
+        access_token (EncryptionEnvelope): The access token for the Azure DevOps API.
+        organisation (EncryptionEnvelope): The Azure DevOps organisation to use.
+        project (EncryptionEnvelope): The Azure DevOps plugin to use.
+        email (EncryptionEnvelope): The email the user uses with Azure DevOps.
+    """
+
+    def __init__(self, access_token: EncryptionEnvelope, organisation: EncryptionEnvelope, project: EncryptionEnvelope,
+                 email: EncryptionEnvelope) -> None:
+        self.access_token = access_token
+        self.organisation = organisation
+        self.project = project
+        self.email = email
+
+    def __eq__(self, other):
+        if isinstance(self, other.__class__):
+            return compare_encryption_envelopes(self.access_token, other.access_token) \
+                   and compare_encryption_envelopes(self.organisation, other.organisation) \
+                   and compare_encryption_envelopes(self.project, other.project) \
+                   and compare_encryption_envelopes(self.email, other.email)
+        return False
 
 
 class AccessConfig:
@@ -35,6 +64,7 @@ class AccessConfig:
         project (str): The Azure DevOps plugin to use.
         email (str): The email the user uses with Azure DevOps.
     """
+
     def __init__(self, access_token: str, organisation: str, project: str,
                  email: str) -> None:
         self.access_token = access_token
@@ -45,9 +75,9 @@ class AccessConfig:
     def __eq__(self, other):
         if isinstance(self, other.__class__):
             return self.access_token == other.access_token \
-                and self.organisation == other.organisation \
-                and self.project == other.project \
-                and self.email == other.email
+                   and self.organisation == other.organisation \
+                   and self.project == other.project \
+                   and self.email == other.email
         return False
 
 
@@ -71,6 +101,7 @@ class ReleaseConfig:
         release_id (int): The release id of the release.
         environment_id (int): The id of the environment associated with the release.
     """
+
     def __init__(self, name: str) -> None:
         self.name = name
         self.complete = False
@@ -97,10 +128,9 @@ class DeploymentConfig:
     """StageConfig is the config for stages.
 
     Attributes:
-        releases (List[str]): The list of releases to deploy.
-
-
+        releases (List[ReleaseConfig]): The list of releases to deploy.
     """
+
     def __init__(self, releases: List[ReleaseConfig], stage: str) -> None:
         self.releases = releases
         self.stage = stage
@@ -119,7 +149,7 @@ class RebuilderSchema(Schema):
     environments = fields.List(fields.Str)
 
     @post_load
-    def make_destoyer_config(self, data, **kwargs):
+    def create_rebuilder_config(self, data, **kwargs):
         """Callback used by marshmallow after loading object. We're using it here
         to create an instance of Config after loading the data."""
         return RebuilderConfig(**data)
@@ -131,12 +161,12 @@ class RebuilderConfig:
     Attributes:
         stages (List[StageConfig}): List of stage configurations.
     """
+
     def __init__(
             self,
-            access: AccessConfig,
+            access: EncryptedAccessConfig,
             deployments: List[DeploymentConfig],
     ) -> None:
-
         self.access = access
         self.deployments = deployments
 

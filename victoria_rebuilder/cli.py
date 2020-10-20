@@ -6,11 +6,11 @@ Author:
     Alex Potter-Dixon <apotter-dixon@glasswallsolutions.com>
 """
 
-import click
 import logging
-from typing import List, Union
 
-from .config import RebuilderConfig
+import click
+
+from .config import RebuilderConfig, AccessConfig
 from .rebuild import Rebuild
 
 
@@ -46,7 +46,9 @@ def copy(cfg: RebuilderConfig, from_env: str, to_env: str,
         f"Rebuilding environments {from_env} from environment: {to_env}")
 
     logging.info(f"Rebuilding environment {to_env}.")
-    env_rebuild = Rebuild(from_env.lower(), to_env.lower(), cfg.access,
+
+    access_cfg = retrieve_access_config(cfg)
+    env_rebuild = Rebuild(from_env.lower(), to_env.lower(), access_cfg,
                           cfg.deployments, resume)
 
     env_rebuild.run_deployments()
@@ -72,9 +74,32 @@ def rebuild(cfg: RebuilderConfig, env: str, resume: bool) -> None:
     """
 
     logging.info(f"Rebuilding environment {env}.")
-    env_rebuild = Rebuild(env.lower(), env.lower(), cfg.access,
+
+    access_cfg = retrieve_access_config(cfg)
+    env_rebuild = Rebuild(env.lower(), env.lower(), access_cfg,
                           cfg.deployments, resume)
 
     env_rebuild.run_deployments()
 
     logging.info(f"Finished running deployments to {env}.")
+
+
+def retrieve_access_config(cfg: RebuilderConfig) -> AccessConfig:
+    try:
+        encryption_provider = cfg.victoria_config.get_encryption()
+    except AttributeError:
+        logging.error(
+            "Please specify 'provider' in the Victoria settings.")
+        raise SystemExit(1)
+    else:
+        access_token = encryption_provider.decrypt_str(cfg.access.access_token)
+        email = encryption_provider.decrypt_str(cfg.access.email)
+        organisation = encryption_provider.decrypt_str(cfg.access.organisation)
+        project = encryption_provider.decrypt_str(cfg.access.project)
+
+        if None in [access_token, email, organisation, project]:
+            logging.error(
+                "Invalid 'access' settings provided. Unable to decrypt.")
+            raise SystemExit(1)
+
+        return AccessConfig(access_token=access_token, email=email, organisation=organisation, project=project)

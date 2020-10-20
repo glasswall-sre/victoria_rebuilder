@@ -7,14 +7,13 @@ Parameters:
 
 """
 
+import logging
 from typing import Tuple, Union
 
 from azure.devops.connection import Connection
 from msrest.authentication import BasicAuthentication
 
 from victoria_rebuilder.config import AccessConfig
-import logging
-import sys
 
 
 class DevOpsClient:
@@ -24,7 +23,7 @@ class DevOpsClient:
         self._connect()
 
     def get_release_status(self, release_id: str, environment_id: int,
-                            name: str) -> bool:
+                           name: str) -> bool:
         """
         Retrieves the current release status of a particular release and environment.
 
@@ -92,16 +91,16 @@ class DevOpsClient:
                     result.environments, target_env)
 
                 for environment in result.environments:
-                    
+
                     if environment.name == from_env and (
                             environment.status == "succeeded"
                             or environment.status == "partiallySucceeded"
                             or environment.status == "queued"
-                            or environment.status == "inProgress" ):
+                            or environment.status == "inProgress"):
                         logging.info(
                             f"Found environment for {name} with id: {environment.id} "
                         )
-                        
+
                         return release.id, target_env_id
 
         return None, None
@@ -131,7 +130,7 @@ class DevOpsClient:
 
     def run_release(self, release_id: int, environment_id: int, release_name: str) -> None:
         """
-        Runs the latest succeeded or partically succeeded pipeline associated
+        Runs the latest succeeded or partially succeeded pipeline associated
         with the object.
 
         Arguments:
@@ -151,12 +150,13 @@ class DevOpsClient:
                 "status": "inProgress"
             }
             self.release_client.update_release_environment(start_values,
-                                                            self.access_cfg.project,
-                                                            release_id,
-                                                            environment_id)
+                                                           self.access_cfg.project,
+                                                           release_id,
+                                                           environment_id)
             logging.info(f"Running release {release_id} for {release_name}.")
         else:
-            logging.info(f"Release {release_id} for {release_name} is currently {release_environment.status} so not starting for this run.")
+            logging.info(
+                f"Release {release_id} for {release_name} is currently {release_environment.status} so not starting for this run.")
 
     def _connect(self):
         """

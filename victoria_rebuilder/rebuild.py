@@ -9,16 +9,16 @@ Parameters:
     fresh (bool): If the rebuilder should use the previous state file.
 
 """
-import time
-import logging
 import copy
-import pickle
+import logging
 import os
+import pickle
 import sys
-from typing import List, Union
+import time
+from typing import List
 
-from victoria_rebuilder.config import AccessConfig, DeploymentConfig, ReleaseConfig
 from victoria_rebuilder.client import DevOpsClient
+from victoria_rebuilder.config import AccessConfig, DeploymentConfig, ReleaseConfig
 
 # The location of the state file.
 STATE_FILE = "rebuild"
@@ -26,8 +26,8 @@ STATE_FILE = "rebuild"
 
 class Rebuild:
     def __init__(self, from_environment: str, target_environment: str,
-                 access_cfg: AccessConfig, deployments: DeploymentConfig,
-                 resume):
+                 access_cfg: AccessConfig, deployments: List[DeploymentConfig],
+                 resume: bool):
 
         self.deployments = deployments
         self.from_environment = from_environment
@@ -128,14 +128,15 @@ class Rebuild:
                         release.complete = True
                         self._save()
                     elif release_status == "rejected" or release_status == "cancelled":
-                        re_run_release = self._re_run_failed_release(release.release_id, release.environment_id, release.name)       
-                        release.complete = False if re_run_release else True                   
+                        re_run_release = self._re_run_failed_release(release.release_id, release.environment_id,
+                                                                     release.name)
+                        release.complete = False if re_run_release else True
                     else:
-                        running = True                   
+                        running = True
 
         return releases
 
-    def _re_run_failed_release(self, release_id: int, release_env_id: int, release_name: str)-> bool:
+    def _re_run_failed_release(self, release_id: int, release_env_id: int, release_name: str) -> bool:
         """
         Asks the user if they want to re run a failed release.
 
@@ -155,11 +156,9 @@ class Rebuild:
             self.client.run_release(release_id, release_env_id, release_name)
         else:
             logging.info(f"{release_name} will not be run again. Continuing with the deployment.")
-        
+
         return run_again
 
-        
-    
     def _query_yes_no(self, question: str, default="yes") -> bool:
         """
         Ask a yes/no question via input() and return their answer.
@@ -174,7 +173,7 @@ class Rebuild:
             The "answer" return value is True for "yes" or False for "no".
         """
         valid = {"yes": True, "y": True, "ye": True,
-                "no": False, "n": False}
+                 "no": False, "n": False}
         if default is None:
             prompt = " [y/n] "
         elif default == "yes":
@@ -193,10 +192,9 @@ class Rebuild:
                 return valid[choice]
             else:
                 sys.stdout.write("Please respond with 'yes' or 'no' "
-                                "(or 'y' or 'n').\n")
-        
+                                 "(or 'y' or 'n').\n")
 
-    def _load(self, resume:bool) -> None:
+    def _load(self, resume: bool) -> None:
         """
         Loads the pickled file of the current object and de-serializes so it can resume
         if there's been a crash or an issue with the pipeline.
@@ -216,7 +214,7 @@ class Rebuild:
             self._clean_up()
             logging.info(f"Fresh run so have removed the previous state file.")
 
-    def _save(self)-> None:
+    def _save(self) -> None:
         """
         Creates a deep copy of the current state of the object, removes the client
         connection so it can be pickled, pickles self and saves it to a file.
