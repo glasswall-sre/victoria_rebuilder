@@ -1,11 +1,10 @@
 import pytest
+from munch import munchify
 
 import victoria_rebuilder
-from types import SimpleNamespace
 from victoria_rebuilder import client
 from victoria_rebuilder import config
 from victoria_rebuilder.rebuild import Rebuild
-from munch import munchify
 
 
 class MockReleaseClient:
@@ -29,7 +28,7 @@ class MockReleaseClient:
                 "name": "pent",
                 "status": "succeeded",
                 "id": 321
-            },{
+            }, {
                 "name": "stage",
                 "status": "rejected",
                 "id": 322
@@ -74,7 +73,7 @@ class MockConnection:
         pass
 
 
-class MockConfig:
+class MockAccessConfig:
     project = "mocked_project"
     access_token = "mocked_access_token"
     organisation = "mocked_organisation"
@@ -86,7 +85,17 @@ def create_mock_client(monkeypatch):
     monkeypatch.setattr(victoria_rebuilder.client, "BasicAuthentication",
                         MockBasicAuthentication)
 
-    return client.DevOpsClient(MockConfig())
+    return client.DevOpsClient(MockAccessConfig())
+
+
+@pytest.fixture
+def mock_access_data():
+    return {
+        "access_token": dict(data="12344", key="access_tokenkey", iv="iv", version="v"),
+        "organisation": dict(data="glasswall", key="organisationkey", iv="iv", version="v"),
+        "project": dict(data="Test_project", key="projectkey", iv="iv", version="v"),
+        "email": dict(data="testemail@email.com", key="emailkey", iv="iv", version="v")
+    }
 
 
 @pytest.fixture
@@ -94,23 +103,17 @@ def mock_client(monkeypatch):
     return create_mock_client(monkeypatch)
 
 
-def create_mock_rebuild(monkeypatch, mock_client):
-
+def create_mock_rebuild(monkeypatch, mock_client, mock_access_data):
     monkeypatch.setattr(victoria_rebuilder.client, "Connection",
                         MockConnection)
     monkeypatch.setattr(victoria_rebuilder.client, "BasicAuthentication",
                         MockBasicAuthentication)
 
     rebuilder_config = config.RebuilderSchema().load({
-        "access": {
-            "access_token": "12344",
-            "organisation": "glasswall",
-            "project": "Test_project",
-            "email": "testemail@email.com"
-        },
+        "access": mock_access_data,
         "deployments": [{
             "stage":
-            "pent",
+                "pent",
             "releases": [{
                 "name": "Platform.Infrastructure"
             }, {
@@ -124,6 +127,6 @@ def create_mock_rebuild(monkeypatch, mock_client):
 
 
 @pytest.fixture
-def mock_rebuild(monkeypatch, mock_client):
+def mock_rebuild(monkeypatch, mock_client, mock_access_data):
+    return create_mock_rebuild(monkeypatch, mock_client, mock_access_data)
 
-    return create_mock_rebuild(monkeypatch, mock_client)
