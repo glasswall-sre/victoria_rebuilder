@@ -74,7 +74,7 @@ def rebuild(cfg: RebuilderConfig, env: str, resume: bool, auto_retry: bool) -> N
     """
     CLI call for rebuilding a specific kubernetes environment
     Arguments:
-        cfg (str): The rebuilder config.
+        cfg (RebuilderConfig): The rebuilder config.
         env (str): Environment to rebuild.
         resume (bool): If the rebuilder should use the previous state file.
         auto_retry (bool): If a release fails to deploy, instead of prompting the user for a y/n on retry, it automatically retries the deployment.
