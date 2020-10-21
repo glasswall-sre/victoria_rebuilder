@@ -103,7 +103,7 @@ def mock_client(monkeypatch):
     return create_mock_client(monkeypatch)
 
 
-def create_mock_rebuild(monkeypatch, mock_client, mock_access_data):
+def create_mock_rebuild(monkeypatch, mock_access_data, auto_retry=False):
     monkeypatch.setattr(victoria_rebuilder.client, "Connection",
                         MockConnection)
     monkeypatch.setattr(victoria_rebuilder.client, "BasicAuthentication",
@@ -123,10 +123,13 @@ def create_mock_rebuild(monkeypatch, mock_client, mock_access_data):
     })
 
     return Rebuild("qa", "pent", rebuilder_config.access,
-                   rebuilder_config.deployments, False)
+                   rebuilder_config.deployments, False, auto_retry)
 
 
 @pytest.fixture
-def mock_rebuild(monkeypatch, mock_client, mock_access_data):
-    return create_mock_rebuild(monkeypatch, mock_client, mock_access_data)
+def mock_rebuild(monkeypatch, mock_access_data):
+    def _create(auto_retry: bool = False):
+        return create_mock_rebuild(monkeypatch, mock_access_data, auto_retry)
+
+    return _create
 
