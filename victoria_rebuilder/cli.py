@@ -37,6 +37,7 @@ def copy(cfg: RebuilderConfig, from_env: str, to_env: str,
     """
     CLI call for rebuilding an environment based off another environment.
     Arguments:
+        cfg (RebuilderConfig): The rebuilder config.
         from_env (str): The environment to rebuild from in Azure DevOps.
         to_env (str): The environment to rebuild.
         resume (bool): If the rebuilder should resume using previous state file.
