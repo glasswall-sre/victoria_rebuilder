@@ -1,5 +1,5 @@
 """
-A further wrapper on the AzureDevops Python API to abstract commmon interactions
+A further wrapper on the AzureDevops Python API to abstract common interactions
 with Azure Devops such as checking if a release is complete.
 
 Parameters:
