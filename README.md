@@ -79,8 +79,14 @@ Options:
 
 Commands:
   copy     CLI call for rebuilding an environment based off another...
-  rebuild  CLI call for rebuilding a specific kubernetes environment...
+  optional flags:
+      -r, ---resume     If you want the rebuilder to use the previous state file.
 
+  rebuild  CLI call for rebuilding a specific kubernetes environment...
+  optional flags:
+      -r, ---resume     If you want the rebuilder to use the previous state file.
+      -a, --auto-retry  If a release fails to deploy, instead of prompting the user 
+                        for a y/n on retry, it automatically retries the deployment.
 ```
 
 ### CLI Examples
