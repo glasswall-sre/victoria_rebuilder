@@ -9,7 +9,7 @@ Victoria Rebuilder is a V. I. C. T. O. R. I. A is a plugin that allows you to ru
 <img align="center" src="https://sonarcloud.io/api/project_badges/measure?project=victoria_rebuilder&metric=reliability_rating">
 <img align="center" src="https://codecov.io/gh/glasswall-sre/victoria_rebuilder/branch/master/graph/badge.svg">
 <img align="center" src="https://img.shields.io/github/license/glasswall-sre/victoria_rebuilder">
-<img align="center" src="https://img.shields.io/github/workflow/status/glasswall-sre/victoria_rebuilder/CI">
+<img align="center" src="https://github.com/glasswall-sre/victoria_rebuilder/workflows/CI%20Pipeline/badge.svg">
 
 </div>
 
