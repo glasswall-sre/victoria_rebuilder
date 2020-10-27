@@ -20,12 +20,11 @@ setup(
         "victoria"
     ],
     name="victoria_rebuilder",
-    version="0.0.3",
+    version="0.1.1",
     description=
     "Victoria Plugin that allows the creation and DESTRUCTION of SAAS on the cloud.",
     long_description=repo_file_as_string("README.md"),
     long_description_content_type="text/markdown",
     author="Alex Potter-Dixon",
-    author_email="apotter-dixon@glasswallsolutions.com",
     packages=find_packages(),
 )
