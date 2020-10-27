@@ -1,5 +1,6 @@
 import pytest
-from conftest import create_mock_client
+
+from tests.rebuilder.conftest import create_mock_client
 
 
 @pytest.fixture

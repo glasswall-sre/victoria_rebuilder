@@ -46,10 +46,48 @@ access:
   email: user@organisation.com
 ```
 
-* `access_token` : The PAT token associated to the email and organisaiton. The PAT Token must have Read and Write access to Releases.
+* `access_token` : The PAT token associated to the email and organisation. The PAT Token must have Read and Write access to Releases.
 * `organisation` : The organisation in Azure DevOps.
 * `project` : The project in Azure DevOps
 * `email` : The email account associated to the PAT token.
+
+##### Encrypting data for config values
+
+In the config, the `access` section expects data that is encrypted. This can be
+achieved with the pre-build `victoria encrypt` command. Details on this
+can be found in [the documentation](https://sre.glasswallsolutions.com/victoria/user-guide.html#cloud-encryption):
+
+1. Make sure you've set up your [Victoria cloud encryption backend](https://sre.glasswallsolutions.com/victoria/user-guide.html#azure).
+2. Paste the required values (i.e. `access_token`, `organisation`, `project` and `email`) into the following Victoria command like:
+   ```
+   $ victoria encrypt data <access_token>
+   ```
+3. The command should output a YAML object containing fields `data`, `iv`, `key` and `version`.
+   This is the encrypted value string and can be safely stored in config.
+   Put this YAML object into your `access` section like:
+   ```yaml
+   access:
+      access_token:
+        data: <snip>
+        iv: <snip>
+        key: <snip>
+        version: <snip>
+      organisation:
+        data: <snip>
+        iv: <snip>
+        key: <snip>
+        version: <snip>
+      project:
+        data: <snip>
+        iv: <snip>
+        key: <snip>
+        version: <snip>
+      email:
+        data: <snip>
+        iv: <snip>
+        key: <snip>
+        version: <snip>
+   ```
 
 #### Deployment Configuration
 
@@ -79,13 +117,19 @@ Options:
 
 Commands:
   copy     CLI call for rebuilding an environment based off another...
-  rebuild  CLI call for rebuilding a specific kubernetes environment...
+  optional flags:
+      -r, ---resume     If you want the rebuilder to use the previous state file.
 
+  rebuild  CLI call for rebuilding a specific kubernetes environment...
+  optional flags:
+      -r, ---resume     If you want the rebuilder to use the previous state file.
+      -a, --auto-retry  If a release fails to deploy, instead of prompting the user 
+                        for a y/n on retry, it automatically retries the deployment.
 ```
 
 ### CLI Examples
 
-#### Rebuild an an environment
+#### Rebuild an environment
 
 Rebuild is defined as running the release pipelines associated with the stage `pent` in this example.
 
@@ -93,7 +137,7 @@ Rebuild is defined as running the release pipelines associated with the stage `p
 victoria rebuilder rebuild pent
 ```
 
-#### Copy an an environment
+#### Copy an environment
 
 Copy is defined as running the release for a stage based of an other stage. The use case for this is if you created a new stage and want it to have the same release version as the dev stage.
 

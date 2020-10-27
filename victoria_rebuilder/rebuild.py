@@ -27,13 +27,14 @@ STATE_FILE = "rebuild"
 class Rebuild:
     def __init__(self, from_environment: str, target_environment: str,
                  access_cfg: AccessConfig, deployments: List[DeploymentConfig],
-                 resume: bool):
+                 resume: bool, auto_retry: bool = False):
 
         self.deployments = deployments
         self.from_environment = from_environment
         self.target_environment = target_environment
         self.access_cfg = access_cfg
         self.deployments = deployments
+        self.auto_retry = auto_retry
         self._load(resume)
         self.client = DevOpsClient(access_cfg)
 
@@ -59,7 +60,7 @@ class Rebuild:
             logging.info(f"Deployment {deployment.stage} has completed.")
         self._clean_up()
 
-    def run_releases(self, releases: List[str], from_environment: str,
+    def run_releases(self, releases: List[ReleaseConfig], from_environment: str,
                      target_environment: str) -> List[ReleaseConfig]:
         """
         Runs a list of releases associated to a specific deployment and environment.
@@ -67,9 +68,9 @@ class Rebuild:
         so it is removed from the list.
 
         Arguments:
-            releases (List[str]): List of releases that need running.
-            target_environment (str): The environment to run the release on.
+            releases (List[ReleaseConfig]): List of releases that need running.
             from_environment (str): The environment you want to base the target environment on.
+            target_environment (str): The environment to run the release on.
 
         Returns:
             A list of Releases (ReleaseConfig). Releases that weren't found would of been removed.
@@ -150,7 +151,7 @@ class Rebuild:
         """
         logging.info(f"{release_name} has not been successful.")
 
-        run_again = self._query_yes_no(f"Would you like to run {release_name} again?")
+        run_again = self.auto_retry or self._query_yes_no(f"Would you like to run {release_name} again?")
 
         if run_again:
             self.client.run_release(release_id, release_env_id, release_name)
