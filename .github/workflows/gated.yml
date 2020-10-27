@@ -1,7 +1,7 @@
-name: CI Pipeline
+name: Gated Pipeline
 
 on:
-  push:
+  pull_request:
     branches:
       - master
 
@@ -30,16 +30,3 @@ jobs:
       - name: Check for security issues with bandit
         run: |
           pipenv run bandit -r victoria_rebuilder --skip B301,B403,B322
-
-  sonarcloud:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          # Disabling shallow clone is recommended for improving relevancy of reporting
-          fetch-depth: 0
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
