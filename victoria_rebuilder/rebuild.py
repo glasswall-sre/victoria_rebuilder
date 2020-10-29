@@ -76,17 +76,13 @@ class Rebuild:
             A list of Releases (ReleaseConfig). Releases that weren't found would of been removed.
         """
         for release in releases[:]:
-
             if not release.complete:
-
                 if not release.release_id:
                     release.release_id, release.environment_id = self.client.get_latest_successful_release(
                         release.name, from_environment, target_environment)
 
                 if release.release_id and release.environment_id:
-                    self.client.run_release(release.release_id,
-                                            release.environment_id, release.name)
-
+                    self.client.run_release(release.release_id, release.environment_id, release.name)
                 else:
                     logging.info(
                         f"Unable to run release for {release.name}. Either no environment for release or it is currently running."
@@ -209,11 +205,10 @@ class Rebuild:
                     loaded_dict = pickle.load(rebuild_obj_file)
                     self.__dict__.update(loaded_dict)
             else:
-                logging.info(
-                    f"Unable to find rebuild file. Assuming fresh run. ")
+                logging.info("Unable to find rebuild file. Assuming fresh run. ")
         else:
             self._clean_up()
-            logging.info(f"Fresh run so have removed the previous state file.")
+            logging.info("Fresh run so have removed the previous state file.")
 
     def _save(self) -> None:
         """
