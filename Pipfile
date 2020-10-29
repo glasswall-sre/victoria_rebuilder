@@ -14,6 +14,7 @@ twine = "*"
 pipenv-setup = "*"
 pytest-azurepipelines = "*"
 bandit = "*"
+cryptography = ">=3.2"
 
 [packages]
 click = "*"
