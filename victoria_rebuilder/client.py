@@ -43,12 +43,13 @@ class DevOpsClient:
             rejected: Environment is in rejected state.
             scheduled: Environment is in scheduled state.
             succeeded: Environment is in succeeded state.
-            undefined:Environment status not set.
+            undefined: Environment status not set.
 
         """
-        print(self.access_cfg.project)
-        print(release_id)
-        print(environment_id)
+        logging.info(f"Project: {self.access_cfg.project}")
+        logging.info(f"Release: {release_id}")
+        logging.info(f"Environment: {environment_id}")
+
         release_environment = self.release_client.get_release_environment(
             self.access_cfg.project,
             release_id=release_id,
