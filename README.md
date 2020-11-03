@@ -40,7 +40,7 @@ There is an [example configuration](https://github.com/glasswall-sre/victoria_re
 
 ``` yaml
 access:
-  access_token:
+  access_token: <encoded>
   organisation: Organisation
   project: Azure DevOps Project
   email: user@organisation.com
@@ -53,12 +53,12 @@ access:
 
 ##### Encrypting data for config values
 
-In the config, the `access` section expects data that is encrypted. This can be
+In the config, the `access_token` which belongs to the `access` section should contain encrypted data. This can be
 achieved with the pre-build `victoria encrypt` command. Details on this
 can be found in [the documentation](https://sre.glasswallsolutions.com/victoria/user-guide.html#cloud-encryption):
 
 1. Make sure you've set up your [Victoria cloud encryption backend](https://sre.glasswallsolutions.com/victoria/user-guide.html#azure).
-2. Paste the required values (i.e. `access_token`, `organisation`, `project` and `email`) into the following Victoria command like:
+2. Paste the required value (i.e. the `access_token`) into the following Victoria command like:
    ```
    $ victoria encrypt data <access_token>
    ```
@@ -72,21 +72,9 @@ can be found in [the documentation](https://sre.glasswallsolutions.com/victoria/
         iv: <snip>
         key: <snip>
         version: <snip>
-      organisation:
-        data: <snip>
-        iv: <snip>
-        key: <snip>
-        version: <snip>
-      project:
-        data: <snip>
-        iv: <snip>
-        key: <snip>
-        version: <snip>
-      email:
-        data: <snip>
-        iv: <snip>
-        key: <snip>
-        version: <snip>
+      organisation: Glasswall
+      project: SomeProject
+      email: some@email.com
    ```
 
 #### Deployment Configuration

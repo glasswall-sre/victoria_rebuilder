@@ -92,9 +92,9 @@ def create_mock_client(monkeypatch):
 def mock_access_data():
     return {
         "access_token": dict(data="12344", key="access_tokenkey", iv="iv", version="v"),
-        "organisation": dict(data="glasswall", key="organisationkey", iv="iv", version="v"),
-        "project": dict(data="Test_project", key="projectkey", iv="iv", version="v"),
-        "email": dict(data="testemail@email.com", key="emailkey", iv="iv", version="v")
+        "organisation": "glasswall",
+        "project": "Test_project",
+        "email": "testemail@email.com"
     }
 
 

@@ -26,9 +26,9 @@ def test_create_access_config(mock_access_data):
     result = AccessSchema().load(mock_access_data)
 
     assert result == EncryptedAccessConfig(access_token=EncryptionEnvelope(**mock_access_data["access_token"]),
-                                           organisation=EncryptionEnvelope(**mock_access_data["organisation"]),
-                                           project=EncryptionEnvelope(**mock_access_data["project"]),
-                                           email=EncryptionEnvelope(**mock_access_data["email"]))
+                                           organisation=mock_access_data["organisation"],
+                                           project=mock_access_data["project"],
+                                           email=mock_access_data["email"])
 
 
 def test_create_destroy_config(mock_access_data):
@@ -47,9 +47,9 @@ def test_create_destroy_config(mock_access_data):
 
     assert result == RebuilderConfig(
         EncryptedAccessConfig(access_token=EncryptionEnvelope(**mock_access_data["access_token"]),
-                              organisation=EncryptionEnvelope(**mock_access_data["organisation"]),
-                              project=EncryptionEnvelope(**mock_access_data["project"]),
-                              email=EncryptionEnvelope(**mock_access_data["email"])),
+                              organisation=mock_access_data["organisation"],
+                              project=mock_access_data["project"],
+                              email=mock_access_data["email"]),
         [
             DeploymentConfig([
                 ReleaseConfig("Platform.test"),

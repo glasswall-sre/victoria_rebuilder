@@ -20,9 +20,9 @@ class AccessSchema(Schema):
     """Marshmallow schema for the Accessing AzureDevops plugin config."""
 
     access_token = fields.Nested(EncryptionEnvelopeSchema, required=True, allow_none=False)
-    organisation = fields.Nested(EncryptionEnvelopeSchema, required=True, allow_none=False)
-    project = fields.Nested(EncryptionEnvelopeSchema, required=True, allow_none=False)
-    email = fields.Nested(EncryptionEnvelopeSchema, required=True, allow_none=False)
+    organisation = fields.Str()
+    project = fields.Str()
+    email = fields.Email()
 
     @post_load
     def create_access_config(self, data, **kwargs):
@@ -30,17 +30,16 @@ class AccessSchema(Schema):
 
 
 class EncryptedAccessConfig:
-    """AccessConfig is the config for accessing Azure Devops.
+    """EncryptedAccessConfig is the config for accessing Azure Devops.
 
     Attributes:
         access_token (EncryptionEnvelope): The access token for the Azure DevOps API.
-        organisation (EncryptionEnvelope): The Azure DevOps organisation to use.
-        project (EncryptionEnvelope): The Azure DevOps plugin to use.
-        email (EncryptionEnvelope): The email the user uses with Azure DevOps.
+        organisation (str): The Azure DevOps organisation to use.
+        project (str): The Azure DevOps plugin to use.
+        email (str): The email the user uses with Azure DevOps.
     """
 
-    def __init__(self, access_token: EncryptionEnvelope, organisation: EncryptionEnvelope, project: EncryptionEnvelope,
-                 email: EncryptionEnvelope) -> None:
+    def __init__(self, access_token: EncryptionEnvelope, organisation: str, project: str, email: str) -> None:
         self.access_token = access_token
         self.organisation = organisation
         self.project = project
@@ -49,9 +48,9 @@ class EncryptedAccessConfig:
     def __eq__(self, other):
         if isinstance(self, other.__class__):
             return compare_encryption_envelopes(self.access_token, other.access_token) \
-                   and compare_encryption_envelopes(self.organisation, other.organisation) \
-                   and compare_encryption_envelopes(self.project, other.project) \
-                   and compare_encryption_envelopes(self.email, other.email)
+                   and self.organisation == other.organisation \
+                   and self.project == other.project \
+                   and self.email == other.email
         return False
 
 
@@ -125,7 +124,7 @@ class DeploymentSchema(Schema):
 
 
 class DeploymentConfig:
-    """StageConfig is the config for stages.
+    """DeploymentConfig is the config for deployments.
 
     Attributes:
         releases (List[ReleaseConfig]): The list of releases to deploy.
@@ -156,7 +155,7 @@ class RebuilderSchema(Schema):
 
 
 class RebuilderConfig:
-    """DeploymentConfig is the config for deployments.
+    """RebuilderConfig is the config for rebuilder.
 
     Attributes:
         stages (List[StageConfig}): List of stage configurations.

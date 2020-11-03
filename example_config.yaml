@@ -1,8 +1,8 @@
 access:
   access_token: <encrypted data>
-  organisation: <encrypted data>
-  project: <encrypted data>
-  email: <encrypted data>
+  organisation: glasswall
+  project: Glasswall Cloud
+  email: apotter-dixon@glasswallsolutions.com
 
 deployments:
   - stage: deploy_init_infrastructure

@@ -100,13 +100,14 @@ def retrieve_access_config(cfg: RebuilderConfig) -> AccessConfig:
         raise SystemExit(1)
     else:
         access_token = encryption_provider.decrypt_str(cfg.access.access_token)
-        email = encryption_provider.decrypt_str(cfg.access.email)
-        organisation = encryption_provider.decrypt_str(cfg.access.organisation)
-        project = encryption_provider.decrypt_str(cfg.access.project)
 
-        if None in [access_token, email, organisation, project]:
+        if access_token is None:
             logging.error(
-                "Invalid 'access' settings provided. Unable to decrypt.")
+                "Invalid 'access' settings provided. Unable to decrypt `access_token`.")
             raise SystemExit(1)
+
+        email = cfg.access.email
+        organisation = cfg.access.organisation
+        project = cfg.access.project
 
         return AccessConfig(access_token=access_token, email=email, organisation=organisation, project=project)
