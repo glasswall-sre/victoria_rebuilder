@@ -27,7 +27,7 @@ Victoria Rebuilder is a V. I. C. T. O. R. I. A is a plugin that allows you to ru
 ## Installation
 
 ``` terminal
-pipenv install -U victoria_rebuilder
+pip install -U victoria_rebuilder
 ```
 
 ## Usage
